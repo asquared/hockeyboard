@@ -217,9 +217,6 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath="..\src\resource.h">
-			</File>
-			<File
 				RelativePath="..\src\serialsync.h">
 			</File>
 		</Filter>
@@ -234,10 +231,10 @@
 				RelativePath="..\res\chroma_green.cur">
 			</File>
 			<File
-				RelativePath=".\GLHockeyBoardSL.rc">
+				RelativePath="..\res\hb.ico">
 			</File>
 			<File
-				RelativePath="..\res\hb.ico">
+				RelativePath=".\HockeyBoard.rc">
 			</File>
 		</Filter>
 	</Files>

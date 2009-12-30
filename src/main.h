@@ -15,13 +15,13 @@
 #include <gl/glu.h>
 #include <gl/glut32w.h>
 
+#include "..\vc7\resource.h"
 #include "FreeType.h"
 #include "HockeyData.h"
 #include "HockeyDrop.h"
 #include "HockeyLogic.h"
 #include "Keybuffer.h"
 #include "HockeyDraw.h"
-#include "resource.h"
 
 // global pointers
 extern freetype::font_data* base;
