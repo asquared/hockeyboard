@@ -54,15 +54,15 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-GLUT_ICON               ICON                    "hb.ico"
+GLUT_ICON               ICON                    "..\\res\\hb.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
-IDC_BLUE                CURSOR                  "chroma_blue.cur"
-IDC_GREEN               CURSOR                  "chroma_green.cur"
+IDC_BLUE                CURSOR                  "..\\res\\chroma_blue.cur"
+IDC_GREEN               CURSOR                  "..\\res\\chroma_green.cur"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

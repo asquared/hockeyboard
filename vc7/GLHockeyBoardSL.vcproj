@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="GLHockeyBoardSL"
+	Name="HockeyBoard"
 	ProjectGUID="{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -32,11 +32,11 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="$(OutDir)/GLHockeyBoard.exe"
+				OutputFile="$(OutDir)/HockeyBoard.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\cairo_new\lib"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/GLHockeyBoard.pdb"
+				ProgramDatabaseFile="$(OutDir)/HockeyBoard.pdb"
 				SubSystem="1"
 				TargetMachine="1"/>
 			<Tool
@@ -125,52 +125,52 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\FreeType.cpp">
+				RelativePath="..\src\FreeType.cpp">
 			</File>
 			<File
-				RelativePath=".\FreeTypeMem.cpp">
+				RelativePath="..\src\FreeTypeMem.cpp">
 			</File>
 			<File
-				RelativePath=".\GLCairoSurface.cpp">
+				RelativePath="..\src\GLCairoSurface.cpp">
 			</File>
 			<File
-				RelativePath=".\GLCairoTextSurface.cpp">
+				RelativePath="..\src\GLCairoTextSurface.cpp">
 			</File>
 			<File
-				RelativePath=".\HockeyData.cpp">
+				RelativePath="..\src\HockeyData.cpp">
 			</File>
 			<File
-				RelativePath=".\HockeyDraw.cpp">
+				RelativePath="..\src\HockeyDraw.cpp">
 			</File>
 			<File
-				RelativePath=".\HockeyDrop.cpp">
+				RelativePath="..\src\HockeyDrop.cpp">
 			</File>
 			<File
-				RelativePath=".\HockeyLogic.cpp">
+				RelativePath="..\src\HockeyLogic.cpp">
 			</File>
 			<File
-				RelativePath=".\HockeyRoster.cpp">
+				RelativePath="..\src\HockeyRoster.cpp">
 			</File>
 			<File
-				RelativePath=".\IniParser.cpp">
+				RelativePath="..\src\IniParser.cpp">
 			</File>
 			<File
-				RelativePath=".\keyboard.cpp">
+				RelativePath="..\src\keyboard.cpp">
 			</File>
 			<File
-				RelativePath=".\Keybuffer.cpp">
+				RelativePath="..\src\Keybuffer.cpp">
 			</File>
 			<File
-				RelativePath=".\main.cpp">
+				RelativePath="..\src\main.cpp">
 			</File>
 			<File
-				RelativePath=".\Mclock.cpp">
+				RelativePath="..\src\Mclock.cpp">
 			</File>
 			<File
-				RelativePath=".\mouse.cpp">
+				RelativePath="..\src\mouse.cpp">
 			</File>
 			<File
-				RelativePath=".\serialsync.cpp">
+				RelativePath="..\src\serialsync.cpp">
 			</File>
 		</Filter>
 		<Filter
@@ -178,46 +178,49 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\FreeType.h">
+				RelativePath="..\src\FreeType.h">
 			</File>
 			<File
-				RelativePath=".\GLCairoSurface.h">
+				RelativePath="..\src\GLCairoSurface.h">
 			</File>
 			<File
-				RelativePath=".\GLCairoTextSurface.h">
+				RelativePath="..\src\GLCairoTextSurface.h">
 			</File>
 			<File
-				RelativePath=".\HockeyData.h">
+				RelativePath="..\src\HockeyData.h">
 			</File>
 			<File
-				RelativePath=".\HockeyDraw.h">
+				RelativePath="..\src\HockeyDraw.h">
 			</File>
 			<File
-				RelativePath=".\HockeyDrop.h">
+				RelativePath="..\src\HockeyDrop.h">
 			</File>
 			<File
-				RelativePath=".\HockeyLogic.h">
+				RelativePath="..\src\HockeyLogic.h">
 			</File>
 			<File
-				RelativePath=".\HockeyRoster.h">
+				RelativePath="..\src\HockeyRoster.h">
 			</File>
 			<File
-				RelativePath=".\IniParser.h">
+				RelativePath="..\src\IniParser.h">
 			</File>
 			<File
-				RelativePath=".\Keybuffer.h">
+				RelativePath="..\src\Keybuffer.h">
 			</File>
 			<File
-				RelativePath=".\main.h">
+				RelativePath="..\src\main.h">
 			</File>
 			<File
-				RelativePath=".\Mclock.h">
+				RelativePath="..\src\Mclock.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath=".\serialsync.h">
+				RelativePath="..\src\resource.h">
+			</File>
+			<File
+				RelativePath="..\src\serialsync.h">
 			</File>
 		</Filter>
 		<Filter
@@ -225,16 +228,16 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 			<File
-				RelativePath=".\chroma_blue.cur">
+				RelativePath="..\res\chroma_blue.cur">
 			</File>
 			<File
-				RelativePath=".\chroma_green.cur">
+				RelativePath="..\res\chroma_green.cur">
 			</File>
 			<File
 				RelativePath=".\GLHockeyBoardSL.rc">
 			</File>
 			<File
-				RelativePath=".\hb.ico">
+				RelativePath="..\res\hb.ico">
 			</File>
 		</Filter>
 	</Files>
