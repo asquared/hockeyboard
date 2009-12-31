@@ -30,22 +30,8 @@ void keyboard( unsigned char key, int x, int y ) {
 	//if ( key == '`' ) {
 	//	drop->raise();
 	//}
-	// Tab
-	if (mod != GLUT_ACTIVE_CTRL && key == 9) {
-		logic->next = 30;
-		logic->selectMajor(data, hd, kbuf, drop);
-	}
-	// Ctrl-[A-Z]
-	else if (mod == GLUT_ACTIVE_CTRL) {
-		logic->next = key;
-		logic->selectMajor(data, hd, kbuf, drop );
-	}
-	// new exit code
-	else if (mod == GLUT_ACTIVE_SHIFT && key == 27) {
-		quit(0);
-	}
 	// Alt-[0-9]
-	else if (mod == GLUT_ACTIVE_ALT && key >= '0' && key <= '9') {
+	if (mod == GLUT_ACTIVE_ALT && key >= '0' && key <= '9') {
 		drop->user_state = jumpstate[key-'0'];
 	}
 	// Spacebar and numbers (outside of prompts)
@@ -55,6 +41,21 @@ void keyboard( unsigned char key, int x, int y ) {
 		else if (key == 'y') data->sync = !(data->sync);
 		else if (key == '<') data->yellow_v = !(data->yellow_v);
 		else if (key == '>') data->yellow_h = !(data->yellow_h);
+
+		// Tab
+		else if (mod != GLUT_ACTIVE_CTRL && key == 9) {
+			logic->next = 30;
+			logic->selectMajor(data, hd, kbuf, drop);
+		}
+		// Ctrl-[A-Z]
+		else if (mod == GLUT_ACTIVE_CTRL) {
+			logic->next = key;
+			logic->selectMajor(data, hd, kbuf, drop );
+		}
+		// new exit code
+		else if (mod == GLUT_ACTIVE_SHIFT && key == 27) {
+			quit(0);
+		}
 
 		for (int i = 0; i < 8; ++i) {
 			if (key == penaltykeys[i]) {

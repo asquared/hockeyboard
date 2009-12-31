@@ -226,6 +226,7 @@ void font_data::init(const char * fname, unsigned int size, ushort low, ushort h
 	this->h = (float) size;
 
 	// Create and initilize a freetype font library.
+	library = 0;
 	if (FT_Init_FreeType( &library )) 
 		throw std::runtime_error("FT_Init_FreeType failed");
 
@@ -234,6 +235,7 @@ void font_data::init(const char * fname, unsigned int size, ushort low, ushort h
 	// This is where we load in the font information from the file.
 	// Of all the places where the code might die, this is the most likely,
 	// as FT_New_Face will die if the font file does not exist or is somehow broken.
+	face = 0;
 	if (FT_New_Face( library, fname, 0, &face )) 
 		throw std::runtime_error("FT_New_Face failed (there is probably a problem with your font file)");
 
@@ -273,10 +275,10 @@ void font_data::clean() {
 	glDeleteLists(list_base, LIST_LEN);
 
 	//We don't need the face information now.
-	FT_Done_Face(face);
+	if (face) FT_Done_Face(face);
 
 	//Ditto for the library.
-	FT_Done_FreeType(library);
+	if (library) FT_Done_FreeType(library);
 
 	initflag = false;
 }

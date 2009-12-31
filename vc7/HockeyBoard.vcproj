@@ -84,8 +84,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				ShowProgress="0"
-				OutputFile="$(OutDir)/GLHockeyBoard.exe"
-				Version="2.3.3"
+				OutputFile="$(OutDir)/HockeyBoard.exe"
+				Version="2.4.0"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\cairo_new\lib"
 				IgnoreAllDefaultLibraries="FALSE"
