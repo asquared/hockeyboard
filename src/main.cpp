@@ -97,9 +97,6 @@ void display() {
 		if (curr_state + i < MAX_STATE)
 			base->print(380, 500-20*i, 0, "%2hhd: %s", curr_state+i, drop->getstring(curr_state+i).substr(0,30).c_str());
 
-	// penalty timers
-	data->printPenalties(logic->disp, base);
-
 	// UI strings (0-41)
 	for ( int i = 0; i < 42; ++i ) {
 		x = (i / 14) * 340 + 10;
@@ -121,14 +118,15 @@ void display() {
 	// powerplay stuff for drops
 	unsigned short vis, home, psec, pmin;
 	d.getPenaltyInfo(vis, home, pmin, psec);
+	d.printPenalties(logic->disp, base);
 	//base->print(20, 400, 0, "%-5s %hu", d.name[0].substr(0,5).c_str(), vis );
 	//base->print(20, 380, 0, "%-5s %hu", d.name[1].substr(0,5).c_str(), home);
 	if (vis-1 > home) base->print(130, 500, 0, "++");
 	else if (vis > home) base->print(140, 500, 0, "+");
 	else if (home-1 > vis) base->print(130, 480, 0, "++");
 	else if (home > vis) base->print(140, 480, 0, "+");
-	base->print(100, 400, 0, "%hu on %hu  --", vis, home);
-	base->print(210, 400, 0, "%2hu:%02hu", pmin, psec);
+	base->print(100, 400, 0, "%hu on %hu  -- %2hu:%02hu", vis, home, pmin, psec);
+	//base->print(210, 400, 0, "");
 	drop->ppdata(vis-home, min(vis, home), pmin, psec);
 
 	// bitmaps

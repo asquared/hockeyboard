@@ -16,7 +16,7 @@ const int FINAL = 0x7f;
 const int INTLEN = 12 * 60 * 1000;
 
 // penalty timer queue length
-const int MAX_QUEUE = 8;
+const int MAX_QUEUE = 16;
 
 // text translation functions
 string int2str(int i);
@@ -24,6 +24,7 @@ string getclock(int min, int sec, int tenths);
 
 // 'time' is time since start of 1st period at which the penalty ends.
 // queue is all zeros if fully inactive.
+/*
 struct PenaltyTimer {
 	int time;
 	short queue_min[MAX_QUEUE];
@@ -45,6 +46,36 @@ struct PenaltyTimer {
 		for (int q = 1; q < MAX_QUEUE; ++q) out += 60000*queue_min[q];
 		return out;
 		//return 60*1000*(queue_min[1] + queue_min[2] + queue_min[3]);
+	}
+};
+*/
+
+class PenaltyQueue {
+	friend class HockeyData;		// avoiding a huge mess
+
+private:
+	int time[2];					// time that the currently running penalty ends
+	unsigned short rem_m[2];		// minutes left on upper/lower timer
+	unsigned short rem_s[2];		// seconds left on upper/lower timer
+	short qm[MAX_QUEUE];			// the (single) queue
+	unsigned short qt[2];			// time queued on upper/lower timers
+
+	void split_queue();									// splits queued penalties into upper/lower timers
+	int pop_queue(int slot, int curr, int time_mode);	// pop penalty from queue, returns time, or zero if empty
+	int push_queue(int min);							// push penalty to queue, returns position of added penalty
+
+	bool active() {
+		if (qm[0] > 0 || qm[1] > 0) return true;
+		return false;
+	}
+	bool active(unsigned int t) {
+		if (t < MAX_QUEUE && qm[t] > 0) return true;
+		return false;
+	}
+	int count() {
+		int out = 0;
+		for (int q = 0; q < MAX_QUEUE; ++q) if (qm[0] > 0) ++out;
+		return out;
 	}
 };
 
@@ -78,15 +109,17 @@ public:
 	RosterList* rl;
 	string rs[2];					// names of rosters used for visiting & home teams
 
-	PenaltyTimer pt[4];
+	//PenaltyTimer pt[4];
+	PenaltyQueue pq[2];
+	unsigned int pt_low_index;		// index of lowest of the 4 timers, which is displayed
 	
 	void reloadRosters();
 	void addPenalty(unsigned char team, unsigned char beginperiod, int begintime, int min);
-	void addPenaltyToSlot(unsigned char index, unsigned char beginperiod, int begintime, int min);
-	void delPenalty(unsigned int index);
-	void delFirstPenalty(unsigned int index);
-	void delLastPenalty(unsigned int index);
-	void editQueue(unsigned int index, std::string qstr);
+	//void addPenaltyToSlot(unsigned char index, unsigned char beginperiod, int begintime, int min);
+	void delPenalty(unsigned int team);
+	void delPenalty(unsigned int team, unsigned int slot);
+	void delLastPenalty(unsigned int team);
+	void editQueue(unsigned int team, std::string qstr);
 	void delPenaltyAuto();
 	void updatePenalty();
 	void getPenaltyInfo(unsigned short& vis, unsigned short& home, unsigned short& rmin, unsigned short& rsec);

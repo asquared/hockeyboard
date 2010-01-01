@@ -737,8 +737,8 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			disp[0] = "C: create";
 			disp[1] = "D: delete";
 			disp[2] = "";
-			disp[3] = "F: delete from front of queue";
-			disp[4] = "B: delete from back of queue";
+			disp[3] = "P: delete single penalty from queue";
+			disp[4] = "L: delete last penalty in queue";
 			disp[5] = "Q: edit queue";
 			disp[6] = "";
 			disp[7] = "G: goal scored, auto-delete if possible";
@@ -756,22 +756,22 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			}
 			else if ( key == 'd' ) { 
 				clearStrings(0,43);
-				disp[42] = "Enter number of penalty to delete:";
+				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 				minor = 20;
 			}
-			else if ( key == 'f' ) {
+			else if ( key == 'p' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter number of penalty to edit:";
+				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 				minor = 30;
 			}
-			else if ( key == 'b' ) {
+			else if ( key == 'l' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter number of penalty to edit:";
+				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 				minor = 40;
 			}
 			else if ( key == 'q' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter number of penalty to edit:";
+				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 				minor = 50;
 			}
 			else if ( key == 'g' ) {
@@ -822,7 +822,7 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			break;
 		case 13:
 			key = kbuf->last();
-			if ( key >= '1' && key <= '5' ) {
+			if ( key >= '1' && key <= '9' ) {
 					key -= '0';
 				if ( inb[1] > 0 ) data->addPenalty( inb[0], inb[1], ini, key );
 				else if ( inb[1] == 0 ) data->addPenalty( inb[0], data->period, data->clock.read(), key );
@@ -832,7 +832,10 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			break;
 		case 20:
 			key = kbuf->last();
-			if ( key >= '1' && key <= '4' ) {
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
 				key -= '1';
 				data->delPenalty(key);
 				clear();
@@ -841,16 +844,33 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			break;
 		case 30:
 			key = kbuf->last();
-			if ( key >= '1' && key <= '4' ) {
-				key -= '1';
-				data->delFirstPenalty(key);
-				clear();
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
+				inb[0] = key - '1';
+				disp[42] = "Enter slot number (1-16):";
+				minor = 31;
 			}
 			kbuf->clear();
 			break;
+		case 31:
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				inb[1] = str2int(kbuf->fullbuf(), -1);
+				if (inb[1] >= 1 && inb[1] <= 16) {
+					data->delPenalty(inb[0], inb[1]-1);
+				}
+				kbuf->clear();
+				clear();
+			}
+			break;
 		case 40:
 			key = kbuf->last();
-			if ( key >= '1' && key <= '4' ) {
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
 				key -= '1';
 				data->delLastPenalty(key);
 				clear();
@@ -859,7 +879,10 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			break;
 		case 50:
 			key = kbuf->last();
-			if ( key >= '1' && key <= '4' ) {
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
 				inb[0] = key - '1';
 				disp[42] = "Enter new queue string (e.g. \"2 2 5 2 0 0 0 0\")";
 				minor = 51;
@@ -935,14 +958,8 @@ void HockeyLogic::logicReset(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 				data->period = 1;
 				data->sc[0] = 0;
 				data->sc[1] = 0;
-				for ( int i = 0; i < 3; ++i ) {
-					data->pt[i].queue_min[0] = 0;
-					data->pt[i].queue_min[1] = 0;
-					data->pt[i].queue_min[2] = 0;
-					data->pt[i].queue_min[3] = 0;
-					data->pt[i].lowrem = false;
-					data->pt[i].time = 0;
-				}
+				for ( int i = 0; i < 2; ++i ) data->delPenalty(i);
+				data->pt_low_index = 0;
 			}
 			kbuf->clear();
 			clear();

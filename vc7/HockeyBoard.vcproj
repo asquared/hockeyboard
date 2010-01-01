@@ -140,6 +140,9 @@
 				RelativePath="..\src\HockeyData.cpp">
 			</File>
 			<File
+				RelativePath="..\src\HockeyData_2.cpp">
+			</File>
+			<File
 				RelativePath="..\src\HockeyDraw.cpp">
 			</File>
 			<File

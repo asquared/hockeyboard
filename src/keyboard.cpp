@@ -59,9 +59,12 @@ void keyboard( unsigned char key, int x, int y ) {
 
 		for (int i = 0; i < 8; ++i) {
 			if (key == penaltykeys[i]) {
-				if (mod == 0) data->addPenaltyToSlot(i, data->period, data->clock.read(), 2);
-				if (mod == GLUT_ACTIVE_ALT) data->addPenaltyToSlot(i, data->period, data->clock.read(), 5);
-				if (mod == GLUT_ACTIVE_SHIFT) data->delFirstPenalty(i-4);
+				if (mod == 0) 
+					data->addPenalty(i >> 1, data->period, data->clock.read(), 2 + 3*(i&1));
+				if (mod == GLUT_ACTIVE_ALT) 
+					data->addPenalty(i >> 1, data->period, data->clock.read(), 4 + 3*(i&1));
+				if (mod == GLUT_ACTIVE_SHIFT) 
+					data->delPenalty((i-4) >> 1, (i-4) & 1);
 			}
 		}
 	}
