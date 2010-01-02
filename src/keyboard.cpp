@@ -41,6 +41,10 @@ void keyboard( unsigned char key, int x, int y ) {
 		else if (key == 'y') data->sync = !(data->sync);
 		else if (key == '<') data->yellow_v = !(data->yellow_v);
 		else if (key == '>') data->yellow_h = !(data->yellow_h);
+		else if (key == 'q') ++(data->tm[0].sog);
+		else if (key == 'Q') --(data->tm[0].sog);
+		else if (key == 'a') ++(data->tm[1].sog);
+		else if (key == 'A') --(data->tm[1].sog);
 
 		// Tab
 		else if (mod != GLUT_ACTIVE_CTRL && key == 9) {
@@ -117,12 +121,12 @@ void specialkey( int key, int x, int y ) {
 
 	// score and yellow highlight controls
 	else if (key == GLUT_KEY_F9) {
-		if (mod == 0) ++(data->sc[0]);
-		else if (mod == GLUT_ACTIVE_SHIFT) --(data->sc[0]);
+		if (mod == 0) ++(data->tm[0].sc);
+		else if (mod == GLUT_ACTIVE_SHIFT) --(data->tm[0].sc);
 	}
 	else if (key == GLUT_KEY_F10) { 
-		if (mod == 0) ++(data->sc[1]);
-		else if (mod == GLUT_ACTIVE_SHIFT) --(data->sc[1]);
+		if (mod == 0) ++(data->tm[1].sc);
+		else if (mod == GLUT_ACTIVE_SHIFT) --(data->tm[1].sc);
 	}
 	else if (key == GLUT_KEY_F11) {
 		if (mod == 0) data->startRedFlash(0);

@@ -79,13 +79,23 @@ private:
 	}
 };
 
+struct TeamData {
+	string name;				// name used next to score
+	string lname;				// name used on info bar area
+	string fname;				// name used on (future) slideshow feature
+	string rs;					// name of roster used for this team
+	unsigned char sc;
+	unsigned char sog;
+};
+
 class HockeyData {
 
 public:
-	string name[2];
-	string lname[2];
-	string fname[2];
-	unsigned char sc[2];
+	//string name[2];
+	//string lname[2];
+	//string fname[2];
+	//unsigned char sc[2];
+	TeamData tm[2];
 	unsigned char period;
 	int otlen;						// overtime length (5 or 20 min, but in ms)
 	int clock_last_stopped;
@@ -107,7 +117,6 @@ public:
 	bool allow_quit;
 
 	RosterList* rl;
-	string rs[2];					// names of rosters used for visiting & home teams
 
 	//PenaltyTimer pt[4];
 	PenaltyQueue pq[2];

@@ -24,10 +24,10 @@ std::string getclock(int min, int sec, int tenths) {
 //inline void normalize_queue(PenaltyTimer& t);
 
 HockeyData::HockeyData() {
-	name[0] = lname[0] = fname[0] = "";
-	name[1] = lname[1] = fname[1] = "";
-	sc[0] = 0;
-	sc[1] = 0;
+	//name[0] = lname[0] = fname[0] = "";
+	//name[1] = lname[1] = fname[1] = "";
+	tm[0].sc = tm[1].sc = 0;
+	tm[0].sog = tm[1].sog = 0;
 	period = 1;
 	otlen = 5 * 60 * 1000;
 	clock.setmode(Mclock::DOWN);
@@ -66,11 +66,11 @@ HockeyData::HockeyData() {
 }
 
 HockeyData::~HockeyData() {
-	delete rl;
+	if (rl) delete rl;
 }
 
 void HockeyData::reloadRosters() {
-	delete rl;
+	if (rl) delete rl;
 	rl = new RosterList(string("roster.ini"));
 }
 
@@ -132,7 +132,7 @@ bool HockeyData::getRedFlash() {
 
 void HockeyData::startRedFlash(unsigned char team) {
 	if (red_flash_clock.read() == 0) {
-		++sc[team];
+		++tm[team].sc;
 		red_flash_team = team;
 		red_flash_clock.set(FLASH_LEN);
 		red_flash_clock.start();

@@ -179,6 +179,7 @@ float HockeyDrop::display(GLCairoSurface* main) {
 			}
 			if (ppstate >= 0) {
 				strength->writetext(lines[0], 14, -3, 0);
+				//strength->writetextshrink(lines[0], 14, 22, 0, 194);
 				pptime->writetext(gettime(min, sec), 94, -8, 2);
 				strength->painton(composite, 4, 0, 1.0);
 				pptime->painton(composite, 220, 0, 1.0);

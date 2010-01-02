@@ -96,10 +96,10 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	}
 
 	for (int i = 0; i < 2; ++i) {
-		score[i]->writetext(int2str(data->sc[i]), 41, -10, 1);
+		score[i]->writetext(int2str(data->tm[i].sc), 41, -10, 1);
 		//name[i]->writetext(data->name[i], 55, -8, 1);
-		name[i]->writetextshrink(data->name[i], 55, 17, 1, 82);
-		bool name_changed = dark_name[i]->writetextshrink(data->name[i], 55, 17, 1, 82);
+		name[i]->writetextshrink(data->tm[i].name, 55, 17, 1, 82);
+		bool name_changed = dark_name[i]->writetextshrink(data->tm[i].name, 55, 17, 1, 82);
 		score[i]->painton(main, 170+177*i, 12, 1.0);
 		name[i]->painton(main, 74+177*i, 15, 1.0);
 

@@ -274,7 +274,7 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			if ( kbuf->enter() ) {
 				inb[1] = str2int(disp[43], -1);
 				if ( inb[1] != 0xff ) {
-					data->sc[inb[0]] = inb[1];
+					data->tm[inb[0]].sc = inb[1];
 				}
 				kbuf->clear();
 				clear();
@@ -336,10 +336,10 @@ void HockeyLogic::logicGAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 					nums[i] = str2int(vs[i], -1);
 					if ( nums[i] != -1 ) 
 						drop->setstring(21+i, gann[i] + "#" + vs[i] + " " + 
-						data->rl->get(data->rs[inb[0]], nums[i]) );
+						data->rl->get(data->tm[inb[0]].rs, nums[i]) );
 					else drop->setstring(21+i, string(""));
 				}
-				drop->setstring(20, data->lname[inb[0]] + gann[3+inb[1]] + " GOAL");
+				drop->setstring(20, data->tm[inb[0]].lname + gann[3+inb[1]] + " GOAL");
 				kbuf->clear();
 				clear();
 			}
@@ -359,7 +359,7 @@ void HockeyLogic::logicKey(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, Ho
 			disp[14] = "+: move bar up";
 			disp[15] = "-: move bar down";
 			disp[16] = "0: reset bar to default position";
-			disp[18] = "Y offset: " + hd->offset;
+			disp[18] = "Y offset: " + IniParser::int2str(hd->offset);
 			disp[42] = "Press letter to select keying mode";
 			minor = 1;
 			kbuf->clear();
@@ -397,12 +397,12 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 0:
 			clearStrings(0,43);
 			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
-			disp[7] = "1N: " + data->name[0];
-			disp[8] = "1L: " + data->lname[0];
-			disp[9] = "1F: " + data->fname[0];
-			disp[21] = "2N: " + data->name[1];
-			disp[22] = "2L: " + data->lname[1];
-			disp[23] = "2F: " + data->fname[1];
+			disp[7] = "1N: " + data->tm[0].name;
+			disp[8] = "1L: " + data->tm[0].lname;
+			disp[9] = "1F: " + data->tm[0].fname;
+			disp[21] = "2N: " + data->tm[1].name;
+			disp[22] = "2L: " + data->tm[1].lname;
+			disp[23] = "2F: " + data->tm[1].fname;
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -444,8 +444,8 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 10:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				data->name[inb[0]] = kbuf->fullbuf();
-				if (data->lname[inb[0]] == "") {
+				data->tm[inb[0]].name = kbuf->fullbuf();
+				if (data->tm[inb[0]].lname == "") {
 					string tostr = kbuf->fullbuf() + " TIMEOUT";
 					drop->setstring(6+inb[0], tostr);
 				}
@@ -456,7 +456,7 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 20:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				data->lname[inb[0]] = kbuf->fullbuf();
+				data->tm[inb[0]].lname = kbuf->fullbuf();
 				string tostr = kbuf->fullbuf() + " TIMEOUT";
 				drop->setstring(6+inb[0], tostr);
 				kbuf->clear();
@@ -466,7 +466,7 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 30:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				data->fname[inb[0]] = kbuf->fullbuf();
+				data->tm[inb[0]].fname = kbuf->fullbuf();
 				kbuf->clear();
 				clear();
 			}
@@ -564,8 +564,8 @@ void HockeyLogic::logicRoster(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf,
 			clearStrings(0,43);
 			disp[12] = "R: reload roster file";
 			disp[23] = "Number of rosters loaded: " + IniParser::int2str(data->rl->team_count());
-			disp[25] = "V: " + data->rs[0] + " (" + IniParser::int2str(data->rl->count(data->rs[0])) + ")";
-			disp[26] = "H: " + data->rs[1] + " (" + IniParser::int2str(data->rl->count(data->rs[1])) + ")";
+			disp[25] = "V: " + data->tm[0].rs + " (" + IniParser::int2str(data->rl->count(data->tm[0].rs)) + ")";
+			disp[26] = "H: " + data->tm[1].rs + " (" + IniParser::int2str(data->rl->count(data->tm[1].rs)) + ")";
 			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 			minor = 1;
 			kbuf->clear();
@@ -590,7 +590,7 @@ void HockeyLogic::logicRoster(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf,
 		case 2:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				data->rs[inb[0]] = kbuf->fullbuf();
+				data->tm[inb[0]].rs = kbuf->fullbuf();
 				kbuf->clear();
 				clear();
 			}
@@ -708,10 +708,10 @@ void HockeyLogic::logicPAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			if ( min != 0 || kbuf->enter() ) {
 				if ( min != 0 ) data->addPenalty( inb[0], data->period, ini, min );
 				for (int i = 11; i <= 19; ++i) drop->setstring(i-3, drop->getstring(i));
-				drop->setstring(17, data->lname[inb[0]] + " PENALTY");
+				drop->setstring(17, data->tm[inb[0]].lname + " PENALTY");
 				drop->setstring(18, input);
 				drop->setstring(19, input);
-				string player_name = data->rl->get(data->rs[inb[0]], inb[1]);
+				string player_name = data->rl->get(data->tm[inb[0]].rs, inb[1]);
 				if (player_name != "") {
 					player_name = "#" + IniParser::int2str(inb[1]) + " " + player_name;
 					drop->setstring(18, player_name);
@@ -956,8 +956,8 @@ void HockeyLogic::logicReset(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			if (key == 'y' || key == 'Y') {
 				data->clock.set(PERLEN);
 				data->period = 1;
-				data->sc[0] = 0;
-				data->sc[1] = 0;
+				data->tm[0].sc = 0;
+				data->tm[1].sc = 0;
 				for ( int i = 0; i < 2; ++i ) data->delPenalty(i);
 				data->pt_low_index = 0;
 			}
@@ -1037,7 +1037,8 @@ void HockeyLogic::logicStat(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				IniParser::remove_dup_delim(buf, " ");
 				IniParser::parsedelim(buf, " ", vs);
 				while (vs.size() < 2) vs.push_back(" ");
-				drop->setstring(inb[0], data->lname[0] + ": " + vs[0] + "  " + data->lname[1] + ": " + vs[1]);
+				drop->setstring(inb[0], data->tm[0].lname + ": " + vs[0] + "  " + 
+					data->tm[1].lname + ": " + vs[1]);
 				kbuf->clear();
 				clear();
 			}

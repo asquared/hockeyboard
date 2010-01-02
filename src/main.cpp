@@ -87,8 +87,9 @@ void display() {
 	else base->print(720, 500, 0, "\x10");
 	
 	// teams and scores
-	base->print(170, 500, 0, "%-5s %3hhu", d.name[0].substr(0,5).c_str(), d.sc[0]);
-	base->print(170, 480, 0, "%-5s %3hhu", d.name[1].substr(0,5).c_str(), d.sc[1]);
+	base->print(230, 500, 0, "SOG");
+	base->print(110, 480, 0, "%-5s %3hhu   %3hhu", d.tm[0].name.substr(0,5).c_str(), d.tm[0].sc, d.tm[0].sog);
+	base->print(110, 460, 0, "%-5s %3hhu   %3hhu", d.tm[1].name.substr(0,5).c_str(), d.tm[1].sc, d.tm[1].sog);
 
 	// drop text strings (8-39)
 	signed short curr_state = drop->user_state;
@@ -121,10 +122,10 @@ void display() {
 	d.printPenalties(logic->disp, base);
 	//base->print(20, 400, 0, "%-5s %hu", d.name[0].substr(0,5).c_str(), vis );
 	//base->print(20, 380, 0, "%-5s %hu", d.name[1].substr(0,5).c_str(), home);
-	if (vis-1 > home) base->print(130, 500, 0, "++");
-	else if (vis > home) base->print(140, 500, 0, "+");
-	else if (home-1 > vis) base->print(130, 480, 0, "++");
-	else if (home > vis) base->print(140, 480, 0, "+");
+	if (vis-1 > home) base->print(70, 480, 0, "++");
+	else if (vis > home) base->print(80, 480, 0, "+");
+	else if (home-1 > vis) base->print(70, 460, 0, "++");
+	else if (home > vis) base->print(80, 460, 0, "+");
 	base->print(100, 400, 0, "%hu on %hu  -- %2hu:%02hu", vis, home, pmin, psec);
 	//base->print(210, 400, 0, "");
 	drop->ppdata(vis-home, min(vis, home), pmin, psec);
