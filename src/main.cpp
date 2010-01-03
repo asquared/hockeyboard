@@ -95,7 +95,7 @@ void display() {
 	signed short curr_state = drop->user_state;
 	base->print(360, 500, 0, "\x10");
 	for (int i = 0; i <= 3; ++i)
-		if (curr_state + i < MAX_STATE)
+		if (curr_state + i <= MAX_USER_STATE)
 			base->print(380, 500-20*i, 0, "%2hhd: %s", curr_state+i, drop->getstring(curr_state+i).substr(0,30).c_str());
 
 	// UI strings (0-41)
@@ -202,7 +202,7 @@ int main( int argc, char* argv[] ) {
 	data = new HockeyData;
 	logic = new HockeyLogic;
 	kbuf = new Keybuffer;
-	drop = new HockeyDrop(428.0f, 676.0f);
+	drop = new HockeyDrop(424, 10);
 
 	/* // framerate clock
 	clk = new Mclock();

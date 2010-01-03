@@ -35,15 +35,15 @@ void HockeyDrop::load_graphics() {
 }
 
 void HockeyDrop::set_lines() {
-	lines[1] = string("DELAYED PENALTY");
-	lines[2] = lines[3] = string("EMPTY NET");
-	lines[4] = lines[5] = string("PENALTY SHOT");
-	lines[6] = lines[7] = string("TIMEOUT");
+	lines[SI_DP] = string("DELAYED PENALTY");
+	lines[SI_EN_V] = lines[SI_EN_H] = string("EMPTY NET");
+	lines[SI_PS_V] = lines[SI_PS_H] = string("PENALTY SHOT");
+	lines[SI_TO_V] = lines[SI_TO_H] = string("TIMEOUT");
 }
 
 HockeyDrop::HockeyDrop() {
 	x = y = 0;
-	user_state = 8;
+	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
 	moving = down = false;
@@ -51,10 +51,10 @@ HockeyDrop::HockeyDrop() {
 	set_lines();
 }
 
-HockeyDrop::HockeyDrop(float xin, float yin) {
+HockeyDrop::HockeyDrop(int xin, int yin) {
 	x = xin;
 	y = yin;
-	user_state = 8;
+	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
 	moving = down = false;
@@ -72,7 +72,7 @@ HockeyDrop::~HockeyDrop() {
 	if (pptime) delete pptime;
 	if (composite) delete composite;
 }
-
+/*
 void HockeyDrop::loadBitmap(unsigned char type, GLCairoSurface* bitmap) {
 	switch (type) {
 		case 0:
@@ -91,7 +91,7 @@ void HockeyDrop::loadBitmap(unsigned char type, GLCairoSurface* bitmap) {
 			break;
 	}
 }
-
+*/
 void HockeyDrop::drop(unsigned char type) {
 	if ( !moving && type >= 0 && type < MAX_LINES ) {
 		if (state == -1) {
@@ -155,8 +155,8 @@ float HockeyDrop::display(GLCairoSurface* main) {
 	}
 
 	// user_state sync
-	if ( state >= MIN_USER_STATE && state <= MAX_STATE && 
-		user_state >= MIN_USER_STATE && user_state <= MAX_STATE ) 
+	if ( state >= MIN_USER_STATE && state <= MAX_USER_STATE && 
+		user_state >= MIN_USER_STATE && user_state <= MAX_USER_STATE ) 
 		state = user_state;
 
 	//glPixelTransferf(GL_ALPHA_SCALE, alpha);
@@ -166,8 +166,9 @@ float HockeyDrop::display(GLCairoSurface* main) {
 	//pptime->clear();
 	//float len;
 	switch (state) {
-		// power play (lines[0])
-		case 0:
+		case SI_PP:
+		case SI_PP_EN:
+			// power play (54, + EMPTY NET (55))
 			if (ppstate >= 1) {
 				pp_y->painton(composite, 1, 0, 1.0);
 			}
@@ -178,30 +179,30 @@ float HockeyDrop::display(GLCairoSurface* main) {
 				pp_w->painton(composite, 1, 0, 1.0);
 			}
 			if (ppstate >= 0) {
-				strength->writetext(lines[0], 14, -3, 0);
-				//strength->writetextshrink(lines[0], 14, 22, 0, 194);
+				//strength->writetext(lines[SI_PP], 14, -3, 0);
+				strength->writetextshrink(lines[state], 14, 22, 0, 194);
 				pptime->writetext(gettime(min, sec), 94, -8, 2);
 				strength->painton(composite, 4, 0, 1.0);
 				pptime->painton(composite, 220, 0, 1.0);
 			}
 			else {
-				text->writetextshrink(lines[0], 167, 22, 1, 295);
+				text->writetextshrink(lines[state], 167, 22, 1, 295);
 				text->painton(composite, 0, 0, 1.0);
 			}
 			break;
-		// yellow lines (lines[1 through 5])
-		case 1:
-		case 2:
-		case 3:
-		case 4:
-		case 5:
+		case SI_EN_V:
+		case SI_EN_H:
+		case SI_PS_V:
+		case SI_PS_H:
+		case SI_DP:
+			// yellow lines (EMPTY NET (48-49), PENALTY SHOT (50-51), DELAYED PENALTY (56))
 			base_y->painton(composite, 0, 0, 1.0);
 			text->writetextshrink(lines[state], 167, 22, 1, 295);
 			text->painton(composite, 0, 0, 1.0);
 			break;
-		case 6:
-		case 7:
-			// TIMEOUT
+		case SI_TO_V:
+		case SI_TO_H:
+			// white lines (TIMEOUT (52-53))
 			base_w->painton(composite, 0, 0, 1.0);
 			text->writetextshrink(lines[state], 167, 22, 1, 295);
 			text->painton(composite, 0, 0, 1.0);
@@ -209,9 +210,9 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		case -1:
 			// do nothing
 			break;
-		// white lines (lines[8 through MAX_STATE-1])
 		default:
-			if (state >= 0 && state < MAX_STATE) {
+			// white lines (custom (0-47))
+			if (state >= 0 && state <= MAX_USER_STATE) {
 				base_w->painton(composite, 0, 0, 1.0);
 				text->writetextshrink(lines[state], 167, 22, 1, 295);
 				text->painton(composite, 0, 0, 1.0);
@@ -221,36 +222,53 @@ float HockeyDrop::display(GLCairoSurface* main) {
 				raise();
 			}
 	}
-	composite->painton(main, 424, 10, alpha);
+	composite->painton(main, x, y, alpha);
 
 	return alpha;
 	//glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
 }
 
 // ppstate:  -1: full strength  0: even strength  1: vis power play  2: home power play
-void HockeyDrop::ppdata( short adv, unsigned short strength, unsigned short pmin, unsigned short psec) {
+void HockeyDrop::ppdata(short adv, unsigned short strength, unsigned short pmin, unsigned short psec) {
 	if ( adv == 0 ) {
 		if (strength == 5) {
-			lines[0] = "FULL STRENGTH";
+			lines[SI_PP] = "FULL STRENGTH";
+			lines[SI_PP_EN] = "EMPTY NET";
+			// automatically change to the normal (yellow) EMPTY NET graphic when 
+			// the power play expires (assumes same team has PP and EN simultaneously)
+			if (state == SI_PP_EN && ppstate > 0) state = SI_EN_V - 1 + ppstate;
 			settime(0,0);
 			ppstate = -1;
 		}
 		else {
-			if (strength == 4) lines[0] = "4-ON-4";
-			else if (strength == 3) lines[0] = "3-ON-3"; 
+			if (strength == 4) {
+				lines[SI_PP] = "4-ON-4";
+				lines[SI_PP_EN] = "4-ON-4 + EMPTY NET";
+			}
+			else if (strength == 3) {
+				lines[SI_PP] = "3-ON-3"; 
+				lines[SI_PP_EN] = "3-ON-3 + EMPTY NET";
+			}
 			settime(pmin, psec);
 			ppstate = 0;
 		}
 	}
 	else if ( abs(adv) == 1 ) {
-		if (strength == 3) lines[0] = "4-ON-3";
-		else lines[0] = "POWER PLAY";
+		if (strength == 3) {
+			lines[SI_PP] = "4-ON-3";
+			lines[SI_PP_EN] = "4-ON-3 + EMPTY NET";
+		}
+		else {
+			lines[SI_PP] = "POWER PLAY";
+			lines[SI_PP_EN] = "PP + EMPTY NET";
+		}
 		settime(pmin, psec);
 		if (adv > 0) ppstate = 1;
 		else ppstate = 2;
 	}
 	else if ( abs(adv) == 2 ) {
-		lines[0] = "2-MAN ADV";
+		lines[SI_PP] = "2-MAN ADV";
+		lines[SI_PP_EN] = "2MA + EMPTY NET";
 		settime(pmin, psec);
 		if (adv > 0) ppstate = 1;
 		else ppstate = 2;
@@ -261,9 +279,10 @@ void HockeyDrop::ppdata( short adv, unsigned short strength, unsigned short pmin
 // return codes:
 // 0: no yellow  1: visitor yellow  2: home yellow
 short HockeyDrop::getyellow() {
-	if ( state < 0 || state >= 6 || state == 1 ) return 0;
-	if ( state == 2 || state == 4 ) return 1;
-	if ( state == 3 || state == 5 ) return 2;
+	if ( state <= MAX_USER_STATE || state >= SI_DP || 
+		state == SI_TO_V || state == SI_TO_H ) return 0;
+	if ( state == SI_EN_V || state == SI_PS_V ) return 1;
+	if ( state == SI_EN_H || state == SI_PS_H ) return 2;
 	else return ppstate;
 }
 

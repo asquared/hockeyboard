@@ -1,7 +1,7 @@
 #include "main.h"
 
 // jump to state using Alt-number
-const int jumpstate[] = {40, 8, 11, 14, 17, 20, 24, 28, 32, 36};
+const int jumpstate[] = {40, 0, 3, 6, 9, 12, 16, 20, 24, 32};
 
 const int penaltykeys[] = {'p',';','[','\'','P',':','{','\"'};
 
@@ -93,7 +93,7 @@ void specialkey( int key, int x, int y ) {
 	else if (key == GLUT_KEY_PAGE_DOWN) data->active_clock->adjust(-100);
 
 	else if (key == GLUT_KEY_DOWN) {
-		if (drop->user_state < MAX_STATE - 1) ++(drop->user_state);
+		if (drop->user_state <= MAX_USER_STATE - 1) ++(drop->user_state);
 	}
 	else if (key == GLUT_KEY_UP) {
 		if (drop->user_state > MIN_USER_STATE) --(drop->user_state);
@@ -101,21 +101,22 @@ void specialkey( int key, int x, int y ) {
 	
 	// drop controls
 	else if (key == GLUT_KEY_F1) {
-		drop->toggle(1);
+		drop->toggle(SI_DP);
 	}
 	else if (key == GLUT_KEY_F2) {
-		drop->toggle(0);
+		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(SI_PP_EN);
+		else drop->toggle(SI_PP);
 	}
 	else if (key == GLUT_KEY_F3) {
-		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(4);
-		else drop->toggle(2);
+		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(SI_PS_V);
+		else drop->toggle(SI_EN_V);
 	}
 	else if (key == GLUT_KEY_F4) {
-		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(5);
-		else drop->toggle(3);
+		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(SI_PS_H);
+		else drop->toggle(SI_EN_H);
 	}
-	else if (key == GLUT_KEY_F5) drop->toggle(6);
-	else if (key == GLUT_KEY_F6) drop->toggle(7);
+	else if (key == GLUT_KEY_F5) drop->toggle(SI_TO_V);
+	else if (key == GLUT_KEY_F6) drop->toggle(SI_TO_H);
 	else if (key == GLUT_KEY_F7) drop->drop(drop->user_state);
 	else if (key == GLUT_KEY_F8) drop->raise();
 

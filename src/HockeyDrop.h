@@ -13,9 +13,20 @@ const static float HT[3] = { 35.0f, 35.0f, 50.0f };
 const static float TK = .1f;
 
 // constant for number of lines/states
-const int MAX_LINES = 48;
-const int MAX_STATE = MAX_LINES;
-const int MIN_USER_STATE = 8;
+const int MAX_LINES = 57;
+const int MIN_USER_STATE = 0;
+const int MAX_USER_STATE = 47;
+
+// constants for special states
+const int SI_EN_V = 48;		// EMPTY NET
+const int SI_EN_H = 49;
+const int SI_PS_V = 50;		// PENALTY SHOT
+const int SI_PS_H = 51;
+const int SI_TO_V = 52;		// TIMEOUT
+const int SI_TO_H = 53;
+const int SI_PP = 54;		// POWER PLAY
+const int SI_PP_EN = 55;	// PP + EMPTY NET
+const int SI_DP = 56;		// DELAYED PENALTY
 
 class HockeyDrop {
 private:
@@ -24,7 +35,7 @@ private:
 
 	string lines[MAX_LINES];
 	short min, sec;
-	float x, y;
+	int x, y;
 	bool moving;
 	bool down;
 	Mclock droptime;
@@ -39,7 +50,7 @@ public:
 	signed char ppstate;
 	
 	HockeyDrop();
-	HockeyDrop(float xin, float yin);
+	HockeyDrop(int xin, int yin);
 	~HockeyDrop();
 	void loadBitmap(unsigned char type, GLCairoSurface* bitmap);
 	void drop(unsigned char type);
