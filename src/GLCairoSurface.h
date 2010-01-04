@@ -45,6 +45,7 @@ public:
 	void drawrect(double x_l, double x_h, double y_l, double y_h);
 	void paintgl(float x, float y);
 	void painton(GLCairoSurface* glcs2, int x, int y, double alpha);
+	void mixfrom(GLCairoSurface* s1, GLCairoSurface* s2, double alpha);
 
 	void color(int r, int g, int b);
 

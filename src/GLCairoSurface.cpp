@@ -95,6 +95,20 @@ void GLCairoSurface::painton(GLCairoSurface* glcs2, int x, int y, double alpha) 
 	cairo_paint_with_alpha(glcs2->ct, alpha);
 }
 
+void GLCairoSurface::mixfrom(GLCairoSurface* s1, GLCairoSurface* s2, double alpha) {
+	unsigned char* p1 = cairo_image_surface_get_data(s1->cs);
+	unsigned char* p2 = cairo_image_surface_get_data(s2->cs);
+	unsigned char* pd = cairo_image_surface_get_data(cs);
+	unsigned int h = cairo_image_surface_get_height(cs);
+	unsigned int w = cairo_image_surface_get_width(cs);
+	unsigned short a = (unsigned short) (255.0 * alpha);
+	for (unsigned char* i = pd; i < pd + 4*h*w; ++i) {
+		*i = (unsigned char) ( ((unsigned short) *p1 * a + (unsigned short) *p2 * (255-a)) / 255 );
+		++p1;
+		++p2;
+	}
+}
+
 void GLCairoSurface::color(int r, int g, int b) {
 	double fr, fg, fb;
 	fr = (double) r;

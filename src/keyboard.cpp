@@ -93,10 +93,10 @@ void specialkey( int key, int x, int y ) {
 	else if (key == GLUT_KEY_PAGE_DOWN) data->active_clock->adjust(-100);
 
 	else if (key == GLUT_KEY_DOWN) {
-		if (drop->user_state <= MAX_USER_STATE - 1) ++(drop->user_state);
+		if (drop->user_state <= MAX_USER_STATE - 1) drop->drop(++(drop->user_state));
 	}
 	else if (key == GLUT_KEY_UP) {
-		if (drop->user_state > MIN_USER_STATE) --(drop->user_state);
+		if (drop->user_state > MIN_USER_STATE) drop->drop(--(drop->user_state));
 	}	
 	
 	// drop controls

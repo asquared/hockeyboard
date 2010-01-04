@@ -10,7 +10,7 @@ using std::string;
 
 // constants for timing
 const static float HT[3] = { 35.0f, 35.0f, 50.0f };
-const static float TK = .1f;
+const static float TK = 0.1f;
 
 // constant for number of lines/states
 const int MAX_LINES = 57;
@@ -42,7 +42,7 @@ private:
 
 	GLCairoSurface* base_y, * base_w, * pp_y, * pp_w;
 	GLCairoTextSurface* text, * strength, * pptime;
-	GLCairoSurface* composite;
+	GLCairoSurface* compf, * compb, * comp;
 
 public:
 	signed char user_state;

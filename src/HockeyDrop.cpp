@@ -31,7 +31,9 @@ void HockeyDrop::load_graphics() {
 	set_font_defaults_black(strength, 30);	
 	pptime = new GLCairoTextSurface(123, 44);
 	set_font_defaults_black(pptime, 36);
-	composite = new GLCairoSurface(335, 44);
+	compf = new GLCairoSurface(335, 44);
+	compb = new GLCairoSurface(335, 44);
+	comp = new GLCairoSurface(335, 44);
 }
 
 void HockeyDrop::set_lines() {
@@ -70,7 +72,9 @@ HockeyDrop::~HockeyDrop() {
 	if (text) delete text;
 	if (strength) delete strength;
 	if (pptime) delete pptime;
-	if (composite) delete composite;
+	if (compf) delete compf;
+	if (compb) delete compb;
+	if (comp) delete comp;
 }
 /*
 void HockeyDrop::loadBitmap(unsigned char type, GLCairoSurface* bitmap) {
@@ -93,31 +97,30 @@ void HockeyDrop::loadBitmap(unsigned char type, GLCairoSurface* bitmap) {
 }
 */
 void HockeyDrop::drop(unsigned char type) {
-	if ( !moving && type >= 0 && type < MAX_LINES ) {
-		if (state == -1) {
-			state = type;
-			droptime.set(0);
-			droptime.start();
-			moving = true;
-			down = true;
-		}
-		else state = type;
+	if ( !moving && type >= 0 && type < MAX_LINES && state != type ) {
+		state = type;
+		droptime.set(0);
+		droptime.start();
+		moving = true;
+		std::swap(compf, compb);
 	}
 }
 
 void HockeyDrop::raise() {
-	if ( !moving ) {
+	if ( !moving && state != -1 ) {
+		state = -1;
 		droptime.set(0);
 		droptime.start();
 		moving = true;
-		down = false;
+		std::swap(compf, compb);
 	}
 }
 
 void HockeyDrop::toggle(unsigned char type) {
-	if ( state == -1 && type >= 0 && type < MAX_LINES ) drop(type);
-	else if ( state >= 0 && state == type ) raise();
-	else state = type;
+	if ( type >= 0 && type < MAX_LINES ) {
+		if ( state == type ) raise();
+		else drop(type);
+	}
 }
 
 void HockeyDrop::setstring(unsigned char type, string& str) {
@@ -144,13 +147,12 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		time = droptime.read();
 		timef = ((float) time) / 1000;
 		if (timef >= (TK) || timef < 0.0f) {
+			alpha = 1.0f;
 			moving = false;
-			if ( !down ) state = -1;
 			droptime.stop();
 		}
 		else if (timef >= 0.0f && timef <= TK) {
 			alpha = timef / TK;
-			if ( !down ) alpha = 1.0f - alpha;
 		}
 	}
 
@@ -160,7 +162,7 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		state = user_state;
 
 	//glPixelTransferf(GL_ALPHA_SCALE, alpha);
-	composite->clear();
+	compf->clear();
 	//text->clear();
 	//strength->clear();
 	//pptime->clear();
@@ -170,24 +172,24 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		case SI_PP_EN:
 			// power play (54, + EMPTY NET (55))
 			if (ppstate >= 1) {
-				pp_y->painton(composite, 1, 0, 1.0);
+				pp_y->painton(compf, 1, 0, 1.0);
 			}
 			else if (ppstate == -1) {
-				base_w->painton(composite, 0, 0, 1.0);
+				base_w->painton(compf, 0, 0, 1.0);
 			}
 			else { 
-				pp_w->painton(composite, 1, 0, 1.0);
+				pp_w->painton(compf, 1, 0, 1.0);
 			}
 			if (ppstate >= 0) {
 				//strength->writetext(lines[SI_PP], 14, -3, 0);
 				strength->writetextshrink(lines[state], 14, 22, 0, 194);
 				pptime->writetext(gettime(min, sec), 94, -8, 2);
-				strength->painton(composite, 4, 0, 1.0);
-				pptime->painton(composite, 220, 0, 1.0);
+				strength->painton(compf, 4, 0, 1.0);
+				pptime->painton(compf, 220, 0, 1.0);
 			}
 			else {
 				text->writetextshrink(lines[state], 167, 22, 1, 295);
-				text->painton(composite, 0, 0, 1.0);
+				text->painton(compf, 0, 0, 1.0);
 			}
 			break;
 		case SI_EN_V:
@@ -196,16 +198,16 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		case SI_PS_H:
 		case SI_DP:
 			// yellow lines (EMPTY NET (48-49), PENALTY SHOT (50-51), DELAYED PENALTY (56))
-			base_y->painton(composite, 0, 0, 1.0);
+			base_y->painton(compf, 0, 0, 1.0);
 			text->writetextshrink(lines[state], 167, 22, 1, 295);
-			text->painton(composite, 0, 0, 1.0);
+			text->painton(compf, 0, 0, 1.0);
 			break;
 		case SI_TO_V:
 		case SI_TO_H:
 			// white lines (TIMEOUT (52-53))
-			base_w->painton(composite, 0, 0, 1.0);
+			base_w->painton(compf, 0, 0, 1.0);
 			text->writetextshrink(lines[state], 167, 22, 1, 295);
-			text->painton(composite, 0, 0, 1.0);
+			text->painton(compf, 0, 0, 1.0);
 			break;
 		case -1:
 			// do nothing
@@ -213,16 +215,25 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		default:
 			// white lines (custom (0-47))
 			if (state >= 0 && state <= MAX_USER_STATE) {
-				base_w->painton(composite, 0, 0, 1.0);
+				base_w->painton(compf, 0, 0, 1.0);
 				text->writetextshrink(lines[state], 167, 22, 1, 295);
-				text->painton(composite, 0, 0, 1.0);
+				text->painton(compf, 0, 0, 1.0);
 			}
 			else {
 				state = -1;
 				raise();
 			}
 	}
-	composite->painton(main, x, y, alpha);
+
+	//compb->painton(main, x, y, 1.0f-alpha);
+	//compf->painton(main, x, y, alpha);
+	if (alpha != 1.0f) {
+		comp->mixfrom(compf, compb, alpha);
+		comp->painton(main, x, y, 1.0f);
+	}
+	else {
+		compf->painton(main, x, y, 1.0f);
+	}
 
 	return alpha;
 	//glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
