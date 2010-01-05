@@ -33,21 +33,22 @@ private:
 	void set_lines();
 	void load_graphics();
 
-	string lines[MAX_LINES];
-	short min, sec;
-	int x, y;
-	bool moving;
-	bool down;
-	Mclock droptime;
+	string lines[MAX_LINES];	// text for each state
+	short min, sec;				// power play clock
+	int x, y;					// position of this element
+	float alpha;				// alpha value for fading
+	bool moving;				// is element currently fading?
+	Mclock droptime;			// fade timer
 
 	GLCairoSurface* base_y, * base_w, * pp_y, * pp_w;
 	GLCairoTextSurface* text, * strength, * pptime;
 	GLCairoSurface* compf, * compb, * comp;
 
 public:
-	signed char user_state;
-	signed char state;
-	signed char ppstate;
+	signed char old_yellow;		// yellow state for the fading out state
+	signed char user_state;		// state between 0-47 currently pointed at
+	signed char state;			// state currently displayed (-1 = nothing)
+	signed char ppstate;		// power play status
 	
 	HockeyDrop();
 	HockeyDrop(int xin, int yin);
@@ -61,7 +62,8 @@ public:
 	void settime(short min_in, short sec_in);
 	float display(GLCairoSurface* main);
 	void ppdata( short adv, unsigned short strength, unsigned short pmin, unsigned short psec);
-	short getyellow();
+	signed char getyellow();
+	void getyellow(float y[2]);
 
 };
 

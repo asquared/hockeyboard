@@ -127,13 +127,15 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	clock->painton(main, 751, 12, 1.0);
 	period->painton(main, 879, 12, 1.0);
 
-	float alpha = drop->display(main);
+	drop->display(main);
 	
 	float user_yellow = 0.0f;
+	float y[2];
+	drop->getyellow(y);
 	if (data->yellow_v) user_yellow = 1.0f;
-	if (data->yellow_v || (drop->getyellow() == 1)) ync[0]->painton(main, 71, 13, max(user_yellow, alpha));
+	if (data->yellow_v || y[0] > 0) ync[0]->painton(main, 71, 13, max(user_yellow, y[0]));
 	if (data->yellow_h) user_yellow = 1.0f;
-	if (data->yellow_h || (drop->getyellow() == 2)) ync[1]->painton(main, 248, 13, max(user_yellow, alpha));
+	if (data->yellow_h || y[1] > 0) ync[1]->painton(main, 248, 13, max(user_yellow, y[1]));
 
 	main->paintgl(0.0f, 736.0f + (float) offset);
 }

@@ -48,7 +48,7 @@ HockeyDrop::HockeyDrop() {
 	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
-	moving = down = false;
+	moving = false;
 	load_graphics();
 	set_lines();
 }
@@ -59,7 +59,7 @@ HockeyDrop::HockeyDrop(int xin, int yin) {
 	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
-	moving = down = false;
+	moving = false;
 	load_graphics();
 	set_lines();
 }
@@ -76,28 +76,10 @@ HockeyDrop::~HockeyDrop() {
 	if (compb) delete compb;
 	if (comp) delete comp;
 }
-/*
-void HockeyDrop::loadBitmap(unsigned char type, GLCairoSurface* bitmap) {
-	switch (type) {
-		case 0:
-			base_y = bitmap;
-			break;
-		case 1:
-			base_w = bitmap;
-			break;
-		case 2:
-			pp_y = bitmap;
-			break;
-		case 3:
-			pp_w = bitmap;
-			break;
-		default:
-			break;
-	}
-}
-*/
+
 void HockeyDrop::drop(unsigned char type) {
 	if ( !moving && type >= 0 && type < MAX_LINES && state != type ) {
+		old_yellow = getyellow();
 		state = type;
 		droptime.set(0);
 		droptime.start();
@@ -108,6 +90,7 @@ void HockeyDrop::drop(unsigned char type) {
 
 void HockeyDrop::raise() {
 	if ( !moving && state != -1 ) {
+		old_yellow = getyellow();
 		state = -1;
 		droptime.set(0);
 		droptime.start();
@@ -138,7 +121,6 @@ void HockeyDrop::settime(short min_in, short sec_in) {
 }
 
 float HockeyDrop::display(GLCairoSurface* main) {
-	float alpha = 1.0f;	// alpha value for fading
 	int time;			// time count in msec
 	float timef;		// time count in sec
 
@@ -146,12 +128,12 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		droptime.update();
 		time = droptime.read();
 		timef = ((float) time) / 1000;
-		if (timef >= (TK) || timef < 0.0f) {
+		if (timef >= TK || timef < 0.0f) {
 			alpha = 1.0f;
 			moving = false;
 			droptime.stop();
 		}
-		else if (timef >= 0.0f && timef <= TK) {
+		else {
 			alpha = timef / TK;
 		}
 	}
@@ -163,10 +145,7 @@ float HockeyDrop::display(GLCairoSurface* main) {
 
 	//glPixelTransferf(GL_ALPHA_SCALE, alpha);
 	compf->clear();
-	//text->clear();
-	//strength->clear();
-	//pptime->clear();
-	//float len;
+
 	switch (state) {
 		case SI_PP:
 		case SI_PP_EN:
@@ -288,13 +267,23 @@ void HockeyDrop::ppdata(short adv, unsigned short strength, unsigned short pmin,
 }
 
 // return codes:
-// 0: no yellow  1: visitor yellow  2: home yellow
-short HockeyDrop::getyellow() {
+// -1: no yellow  0: visitor yellow  1: home yellow
+signed char HockeyDrop::getyellow() {
 	if ( state <= MAX_USER_STATE || state >= SI_DP || 
-		state == SI_TO_V || state == SI_TO_H ) return 0;
-	if ( state == SI_EN_V || state == SI_PS_V ) return 1;
-	if ( state == SI_EN_H || state == SI_PS_H ) return 2;
-	else return ppstate;
+		state == SI_TO_V || state == SI_TO_H ) return -1;
+	if ( state == SI_EN_V || state == SI_PS_V ) return 0;
+	if ( state == SI_EN_H || state == SI_PS_H ) return 1;
+	else return ppstate-1;
+}
+
+void HockeyDrop::getyellow(float y[2]) {
+	y[0] = y[1] = 0.0f;
+	signed char yellow = getyellow();
+	if (old_yellow >= 0) y[old_yellow] += (1.0f - alpha);
+	if (yellow >= 0) {
+		y[yellow] += alpha;
+		if (yellow == old_yellow) y[yellow] = 1.0f;
+	}
 }
 
 /*
