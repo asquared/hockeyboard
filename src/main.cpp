@@ -227,6 +227,8 @@ int main( int argc, char* argv[] ) {
 	// new draw code
 	hd = new HockeyDraw;
 
+	load_settings("settings.ini");
+
 	// setup window callbacks
     glutDisplayFunc( display );
     glutKeyboardFunc( keyboard );

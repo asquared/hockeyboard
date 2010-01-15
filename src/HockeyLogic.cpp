@@ -925,7 +925,7 @@ void HockeyLogic::logicPeriod(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf,
 				++(data->period);
 				if ( data->period > 127 ) data->period = 1;
 				else if ( data->period > 9 ) data->period = 9;
-				if ( data->period < 4 ) data->clock.set(PERLEN);
+				if ( data->period < 4 ) data->clock.set(data->PERLEN);
 				else data->clock.set(data->otlen);
 				clear();
 			}
@@ -954,7 +954,7 @@ void HockeyLogic::logicReset(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 1:
 			key = kbuf->last();
 			if (key == 'y' || key == 'Y') {
-				data->clock.set(PERLEN);
+				data->clock.set(data->PERLEN);
 				data->period = 1;
 				data->tm[0].sc = 0;
 				data->tm[1].sc = 0;

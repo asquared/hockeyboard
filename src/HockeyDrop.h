@@ -8,10 +8,6 @@
 
 using std::string;
 
-// constants for timing
-const static float HT[3] = { 35.0f, 35.0f, 50.0f };
-const static float TK = 0.1f;
-
 // constant for number of lines/states
 const int MAX_LINES = 57;
 const int MIN_USER_STATE = 0;
@@ -37,8 +33,8 @@ private:
 	short min, sec;				// power play clock
 	int x, y;					// position of this element
 	float alpha;				// alpha value for fading
-	bool moving;				// is element currently fading?
 	Mclock droptime;			// fade timer
+	bool moving;				// is element currently fading?
 
 	GLCairoSurface* base_y, * base_w, * pp_y, * pp_w;
 	GLCairoTextSurface* text, * strength, * pptime;
@@ -49,6 +45,7 @@ public:
 	signed char user_state;		// state between 0-47 currently pointed at
 	signed char state;			// state currently displayed (-1 = nothing)
 	signed char ppstate;		// power play status
+	float TK;					// fade time
 	
 	HockeyDrop();
 	HockeyDrop(int xin, int yin);

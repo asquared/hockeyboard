@@ -9,11 +9,11 @@
 #include <sstream>
 
 // default period length is 20 min
-const int PERLEN = 20 * 60 * 1000;
-const int FINAL = 0x7f;
-
+//const int PERLEN = 20 * 60 * 1000;
 // intermission length is 12 min
-const int INTLEN = 12 * 60 * 1000;
+//const int INTLEN = 12 * 60 * 1000;
+
+const int FINAL = 0x7f;
 
 // penalty timer queue length
 const int MAX_QUEUE = 16;
@@ -97,15 +97,19 @@ public:
 	//unsigned char sc[2];
 	TeamData tm[2];
 	unsigned char period;
+	int PERLEN, INTLEN;				// former constants
 	int otlen;						// overtime length (5 or 20 min, but in ms)
 	int clock_last_stopped;
 	Mclock clock;
 	Mclock int_clock;
 	Mclock* active_clock;
 	Mclock red_flash_clock;			// used to control red flash effect
+	int FLASH_LEN, 
+		FLASH_CYC, 
+		FLASH_OFF;					// red flash timing variables
 	unsigned char red_flash_team;
-	bool yellow_v, yellow_h;
 	unsigned char keymode;
+	bool yellow_v, yellow_h;
 
 	// sync stuff
 	SerialSync ssync;
@@ -116,6 +120,7 @@ public:
 	
 	bool allow_quit;
 
+	string roster_file;
 	RosterList* rl;
 
 	//PenaltyTimer pt[4];

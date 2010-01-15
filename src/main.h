@@ -40,6 +40,7 @@ void specialkey( int key, int x, int y );
 void mousemove(int x, int y);
 void mouseclick(int button, int state, int x, int y);
 
+void load_settings(const char* filename);
 void make2d();
 void quit(int code);
 

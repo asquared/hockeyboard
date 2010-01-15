@@ -175,6 +175,9 @@
 			<File
 				RelativePath="..\src\serialsync.cpp">
 			</File>
+			<File
+				RelativePath="..\src\settings.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

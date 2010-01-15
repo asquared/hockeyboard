@@ -29,6 +29,8 @@ HockeyData::HockeyData() {
 	tm[0].sc = tm[1].sc = 0;
 	tm[0].sog = tm[1].sog = 0;
 	period = 1;
+	PERLEN = 20 * 60 * 1000;
+	INTLEN = 12 * 60 * 1000;
 	otlen = 5 * 60 * 1000;
 	clock.setmode(Mclock::DOWN);
 	clock.set(PERLEN);
@@ -39,6 +41,9 @@ HockeyData::HockeyData() {
 	red_flash_clock.setmode(Mclock::DOWN);
 	red_flash_clock.set(0);
 	red_flash_team = 0;
+	FLASH_LEN = 4000;
+	FLASH_CYC = 250;
+	FLASH_OFF = 125;
 	yellow_v = false;
 	yellow_h = false;
 	keymode = 'l';
@@ -48,7 +53,8 @@ HockeyData::HockeyData() {
 	stop_delay = 0;
 	allow_quit = false;
 
-	rl = new RosterList(string("roster.ini"));
+	roster_file = "roster.ini";
+	rl = new RosterList(roster_file);
 
 	// debug
 	//Roster* b = rl->get_roster(string(""));
@@ -71,7 +77,7 @@ HockeyData::~HockeyData() {
 
 void HockeyData::reloadRosters() {
 	if (rl) delete rl;
-	rl = new RosterList(string("roster.ini"));
+	rl = new RosterList(roster_file);
 }
 
 
@@ -120,11 +126,6 @@ std::string HockeyData::getStringPeriod() {
 			return std::string("OT").append(perchar);
 	}
 }
-
-// timings for flashing
-#define FLASH_LEN 4000
-#define FLASH_CYC 250
-#define FLASH_OFF 125
 
 bool HockeyData::getRedFlash() {
 	return (red_flash_clock.read() % FLASH_CYC >= FLASH_OFF);
