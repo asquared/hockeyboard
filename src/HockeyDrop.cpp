@@ -45,6 +45,7 @@ void HockeyDrop::set_lines() {
 
 HockeyDrop::HockeyDrop() {
 	x = y = 0;
+	old_yellow = -1;
 	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
@@ -56,6 +57,7 @@ HockeyDrop::HockeyDrop() {
 HockeyDrop::HockeyDrop(int xin, int yin) {
 	x = xin;
 	y = yin;
+	old_yellow = -1;
 	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;

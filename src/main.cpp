@@ -78,31 +78,32 @@ void display() {
 	d.red_flash_clock.update();
 	int tenths, sec, min;
 	get_clock_parts(d.clock, min, sec, tenths);
-	base->print(740, 500, 0, "Game:   %02d:%02d.%01d", min, sec, tenths);
+	base->qprint(740, 500, 0, "Game:   %02d:%02d.%01d", min, sec, tenths);
 	if (d.sync) base->print(940, 460, 0, "SYNC %c", d.sstat);
-	base->print(940, 500, 0, "P:%3hhu", d.period);
+	base->qprint(940, 500, 0, "P:%3hhu", d.period);
 	get_clock_parts(d.int_clock, min, sec, tenths);
-	base->print(740, 460, 0, "Int.:   %02d:%02d.%01d", min, sec, tenths);
-	if (d.active_clock == &(d.int_clock)) base->print(720, 460, 0, "\x10");
-	else base->print(720, 500, 0, "\x10");
+	base->qprint(740, 460, 0, "Int.:   %02d:%02d.%01d", min, sec, tenths);
+	if (d.active_clock == &(d.int_clock)) base->qprint(720, 460, 0, "\x10");
+	else base->qprint(720, 500, 0, "\x10");
 	
 	// teams and scores
-	base->print(230, 500, 0, "SOG");
-	base->print(110, 480, 0, "%-5s %3hhu   %3hhu", d.tm[0].name.substr(0,5).c_str(), d.tm[0].sc, d.tm[0].sog);
-	base->print(110, 460, 0, "%-5s %3hhu   %3hhu", d.tm[1].name.substr(0,5).c_str(), d.tm[1].sc, d.tm[1].sog);
+	base->qprint(230, 500, 0, "SOG");
+	base->qprint(110, 480, 0, "%-5s %3hhu   %3hhu", d.tm[0].name.substr(0,5).c_str(), d.tm[0].sc, d.tm[0].sog);
+	base->qprint(110, 460, 0, "%-5s %3hhu   %3hhu", d.tm[1].name.substr(0,5).c_str(), d.tm[1].sc, d.tm[1].sog);
 
 	// drop text strings (8-39)
 	signed short curr_state = drop->user_state;
 	base->print(360, 500, 0, "\x10");
-	for (int i = 0; i <= 3; ++i)
+	for (int i = 0; i <= 3; ++i) {
 		if (curr_state + i <= MAX_USER_STATE)
 			base->print(380, 500-20*i, 0, "%2hhd: %s", curr_state+i, drop->getstring(curr_state+i).substr(0,30).c_str());
+	}
 
 	// UI strings (0-41)
 	for ( int i = 0; i < 42; ++i ) {
 		x = (i / 14) * 340 + 10;
 		y = 320 - (i % 14) * 20;
-		base->print(x, y, 0, logic->disp[i].c_str());
+		base->qprint(x, y, 0, logic->disp[i].c_str());
 	}
 
 	// blinking cursor
@@ -122,11 +123,11 @@ void display() {
 	d.printPenalties(logic->disp, base);
 	//base->print(20, 400, 0, "%-5s %hu", d.name[0].substr(0,5).c_str(), vis );
 	//base->print(20, 380, 0, "%-5s %hu", d.name[1].substr(0,5).c_str(), home);
-	if (vis-1 > home) base->print(70, 480, 0, "++");
-	else if (vis > home) base->print(80, 480, 0, "+");
-	else if (home-1 > vis) base->print(70, 460, 0, "++");
-	else if (home > vis) base->print(80, 460, 0, "+");
-	base->print(100, 400, 0, "%hu on %hu  -- %2hu:%02hu", vis, home, pmin, psec);
+	if (vis-1 > home) base->qprint(70, 480, 0, "++");
+	else if (vis > home) base->qprint(80, 480, 0, "+");
+	else if (home-1 > vis) base->qprint(70, 460, 0, "++");
+	else if (home > vis) base->qprint(80, 460, 0, "+");
+	base->qprint(100, 400, 0, "%hu on %hu  -- %2hu:%02hu", vis, home, pmin, psec);
 	//base->print(210, 400, 0, "");
 	drop->ppdata(vis-home, min(vis, home), pmin, psec);
 

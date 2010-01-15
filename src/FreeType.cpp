@@ -103,17 +103,17 @@ void font_data::make_dlist(uint glyph_id, ushort ch) {
 	}
 
 	// Load the Glyph for our character.
-	if (FT_Load_Glyph( face, FT_Get_Char_Index( face, glyph_id ), FT_LOAD_DEFAULT ))
+	if (FT_Load_Glyph(face, FT_Get_Char_Index(face, glyph_id), FT_LOAD_DEFAULT))
 		throw std::runtime_error("FT_Load_Glyph failed");
 
 	// Move the face's glyph into a Glyph object.
     FT_Glyph glyph;
-    if (FT_Get_Glyph( face->glyph, &glyph ))
+    if (FT_Get_Glyph(face->glyph, &glyph))
 		throw std::runtime_error("FT_Get_Glyph failed");
 
 	// Convert the glyph to a bitmap.
-	FT_Glyph_To_Bitmap( &glyph, ft_render_mode_normal, 0, 1 );
-    FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph)glyph;
+	FT_Glyph_To_Bitmap(&glyph, ft_render_mode_normal, 0, 1);
+    FT_BitmapGlyph bitmap_glyph = (FT_BitmapGlyph) glyph;
 
 	// This reference will make accessing the bitmap easier
 	FT_Bitmap& bitmap=bitmap_glyph->bitmap;
@@ -122,13 +122,13 @@ void font_data::make_dlist(uint glyph_id, ushort ch) {
 	// the bitmap data that we will need in order to create
 	// our texture.
 	// The max(2, ...) is used to correct for OpenGL, which 
-	// apparently does not like to have rows less than 4 pixels
+	// apparently does not like to have rows less than 4 bytes
 	// long.  Probably a packing thing.
 	int width = max(2, next_p2(bitmap.width));
-	int height = next_p2( bitmap.rows );
+	int height = next_p2(bitmap.rows);
 
 	// Allocate memory (temporarily) for the texture data.
-	GLubyte* expanded_data = new GLubyte[ 2 * width * height];
+	GLubyte* expanded_data = new GLubyte[2 * width * height];
 
 	// Here we fill in the data for the expanded bitmap.
 	// Notice that we are using two channel bitmap (one for
@@ -148,36 +148,39 @@ void font_data::make_dlist(uint glyph_id, ushort ch) {
 	}
 
 	// Now we just setup some texture paramaters.
-    glBindTexture( GL_TEXTURE_2D, tex );
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	// Here we actually create the texture itself, notice
 	// that we are using GL_LUMINANCE_ALPHA to indicate that
 	// we are using 2 channel data.
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, width, height,
-		  0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data );
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height,
+		  0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, expanded_data);
 
 
 	// With the texture created, we don't need the expanded data anymore
     delete [] expanded_data;
 
 	// So now we can create the display list
-	glNewList(list_base+ch,GL_COMPILE);
+	glNewList(list_base + ch, GL_COMPILE);
 
-	glBindTexture(GL_TEXTURE_2D,tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
 
-	glPushMatrix();
+	//glPushMatrix();
 
 	// First we need to move over a little so that
 	// the character has the right amount of space
 	// between it and the one before it.
-	glTranslatef((float) bitmap_glyph->left,0,0);
+	//glTranslatef((float) bitmap_glyph->left,0,0);
 
 	// Now we move down a little in the case that the
 	// bitmap extends past the bottom of the line 
 	// (this is only true for characters like 'g' or 'y'.
-	glTranslatef(0,(float)bitmap_glyph->top-bitmap.rows,0);
+	//glTranslatef(0,(float)bitmap_glyph->top-bitmap.rows,0);
+	float left_pad = (float) bitmap_glyph->left;
+	float bot_pad = (float) bitmap.rows-bitmap_glyph->top;
+	glTranslatef(left_pad, -bot_pad, 0);
 
 	// Now we need to account for the fact that many of
 	// our textures are filled with empty padding space.
@@ -195,17 +198,18 @@ void font_data::make_dlist(uint glyph_id, ushort ch) {
 	// so we need to link the texture to the quad
 	// so that the result will be properly aligned.
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,0); glVertex2f(0,(float)bitmap.rows);
-	glTexCoord2d(0,y); glVertex2f(0,0);
-	glTexCoord2d(x,y); glVertex2f((float)bitmap.width,0);
-	glTexCoord2d(x,0); glVertex2f((float)bitmap.width,(float)bitmap.rows);
+	glTexCoord2d(0, 0); glVertex2f(0, (float) bitmap.rows);
+	glTexCoord2d(0, y); glVertex2f(0, 0);
+	glTexCoord2d(x, y); glVertex2f((float) bitmap.width, 0);
+	glTexCoord2d(x, 0); glVertex2f((float) bitmap.width, (float) bitmap.rows);
 	glEnd();
-	glPopMatrix();
+	//glPopMatrix();
 
 	// Get width, round, and translate
 	short ch_width = (short)(face->glyph->linearHoriAdvance >> 16);
 	if (face->glyph->linearHoriAdvance & 0x8000) ++ch_width;
-	glTranslatef(ch_width, 0, 0);
+	//glTranslatef(ch_width, 0, 0);
+	glTranslatef(ch_width-left_pad, bot_pad, 0);
 
 	// The two ways to do width:
 	// face->glyph->linearHoriAdvance >> 16
@@ -215,10 +219,8 @@ void font_data::make_dlist(uint glyph_id, ushort ch) {
 	glEndList();
 
 	// Store the width of this character
-	m.set_w( ch, ch_width );
+	m.set_w(ch, ch_width);
 }
-
-
 
 void font_data::init(const char * fname, unsigned int size, ushort low, ushort high) {
 
@@ -253,7 +255,6 @@ void font_data::init(const char * fname, unsigned int size, ushort low, ushort h
 	for (ushort i = low; i <= high; ++i) {
 		make_dlist(i);
 	}
-
 }
 
 // load glyphs into arbitrary positions
@@ -310,16 +311,52 @@ inline void pop_projection_matrix() {
 	glPopAttrib();
 }
 
-/*
-float font_data::text_length(const ushort* text) {
-	unsigned int i = 0;
-	float len = 0;
-	while ( text[i] != 0 || i == 256 ) {
-		len += m.get_w((uchar) (text[i++]));
+// Quick print function.  Limited to 8-bit characters (0-255), left alignment, one line.
+void font_data::qprint(float x, float y, int align, const char *fmt, ...) {
+	// We want a coordinate system where things coresponding to window pixels.
+	pushScreenCoordinateMatrix();	
+
+	//We make the height about 1.5* that of
+	float ht= h/.63f;						
+	
+	char		text[256];								// Holds the string (max of 255 bytes)
+	va_list		ap;										// Pointer to list of arguments
+
+	if (fmt == NULL)									// If there's no text
+		*text=0;										// do nothing
+
+	else {
+		va_start(ap, fmt);								// Parses the string for variables
+	    vsprintf(text, fmt, ap);						// and converts symbols to actual numbers
+		va_end(ap);										// Results are stored in text
 	}
-	return len;
+
+	glPushAttrib(GL_LIST_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TRANSFORM_BIT);	
+	glMatrixMode(GL_MODELVIEW);
+	glDisable(GL_LIGHTING);
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
+
+	glListBase(list_base);
+
+	float modelview_matrix[16];	
+	glGetFloatv(GL_MODELVIEW_MATRIX, modelview_matrix);
+
+	glPushMatrix();
+	glLoadIdentity();
+	glTranslatef(x,y,0);
+	glMultMatrixf(modelview_matrix);
+
+	// Call the display lists using the 8-bit text line.	
+	glCallLists((GLsizei) strlen(text), GL_UNSIGNED_BYTE, text);
+
+	glPopMatrix();
+	glPopAttrib();		
+
+	pop_projection_matrix();
 }
-*/
 
 // Much like Nehe's glPrint function, but modified to work
 // with freetype fonts.

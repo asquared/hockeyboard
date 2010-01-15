@@ -134,6 +134,7 @@ namespace freetype {
 
 		// The varargs print function.
 		void print(float x, float y, int align, const char *fmt, ...);
+		void qprint(float x, float y, int align, const char *fmt, ...);
 
 		//The init function will create a font of
 		//of the height h from the file fname.
