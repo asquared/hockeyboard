@@ -133,6 +133,8 @@ public:
 	void delPenalty(unsigned int team);
 	void delPenalty(unsigned int team, unsigned int slot);
 	void delLastPenalty(unsigned int team);
+	void setPenaltyTime(unsigned int team, unsigned int slot, int per, int time, bool start);
+	void adjustPenaltyTime(unsigned int team, unsigned int slot, int time);
 	void editQueue(unsigned int team, std::string qstr);
 	void delPenaltyAuto();
 	void updatePenalty();

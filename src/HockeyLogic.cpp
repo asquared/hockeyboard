@@ -1,6 +1,5 @@
 #include "HockeyLogic.h"
 #include <iostream>
-#include <sstream>
 
 const char* HockeyLogic::penalties[] = { 
 	"HITTING FROM BEHIND",
@@ -39,9 +38,10 @@ const char* HockeyLogic::gann[] = {
 	" SH"
 };
 
+const char* STR_TEAM_SEL = "Enter 1 or V for visiting team, 2 or H for home team:";
+
 HockeyLogic::HockeyLogic() {
-	inb[0] = 0;
-	inb[1] = 0;
+	inb[0] = inb[1] = inb[2] = inb[3] = 0;
 
 	next = -1;
 	for (int i = 0; i < 58; ++i) {
@@ -68,10 +68,10 @@ HockeyLogic::HockeyLogic() {
 
 }
 
-float str2float(const string& s, float def) {
+double str2float(const string& s, double def) {
 	stringstream ss;
 	ss << s;
-	float out = def;
+	double out = def;
 	ss >> out;
 	return out;
 }
@@ -85,22 +85,23 @@ int str2int(const string& s, int def) {
 }
 
 int str2time(const string& s) {
-	float in = str2float(s, -1.0f);
+	double in = str2float(s, -1.0f);
 	if ( in >= 0 ) {
-		float min = (float) floor(in / 100.0f);
-		float sec = in - min * 100.0f;
-		return (int)(min * 60000.0f + sec * 1000.0f);
+		double min = floor(in / 100.0);
+		double sec = in - min * 100.0;
+		return (int)(min * 60000.0 + sec * 1000.0);
 	}
 	else return -1;
 }
 
 int str2time_signed(const string& s) {
-	float in = str2float(s, 0);
+	double in = str2float(s, DBL_MAX);
+	if (in == DBL_MAX) return 0x80000000;
 	int sign = in >= 0 ? 1 : -1;
 	in = abs(in);
-	float min = (float) floor(in / 100.0f);
-	float sec = in - min * 100.0f;
-	return sign*(int)(min * 60000.0f + sec * 1000.0f);
+	double min = floor(in / 100.0);
+	double sec = in - min * 100.0;
+	return sign*(int)(min * 60000.0 + sec * 1000.0);
 }
 
 void HockeyLogic::clearStrings(int low, int high) {
@@ -134,8 +135,7 @@ void HockeyLogic::clear() {
 	disp[25] = "Ctrl-Z: Reset all";
 	clearStrings(26,43);
 	// clear any locals necessary
-	inb[0] = 0;
-	inb[1] = 0;
+	inb[0] = inb[1] = inb[2] = inb[3] = 0;
 	ini = 0;
 	input = "";
 }
@@ -164,7 +164,9 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			disp[1] = "A: adjust clock";
 			disp[2] = "R: reset clock";
 			disp[3] = "O: set overtime length";
-			clearStrings(4,41);
+			clearStrings(4,16);
+			disp[17] = IniParser::int2str(data->otlen / 60000);
+			clearStrings(18,41);
 			disp[42] = "Enter choice:";
 			disp[43] = "";
 			minor = 1;
@@ -175,25 +177,21 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			if ( key == 'a' ) {
 				clearStrings(0,41);
 				disp[42] = "Enter time to adjust by, in [-]MMSS.D format:";
-				disp[43] = "";
 				minor = 10;
 			}
 			else if (key == 'o') {
 				clearStrings(0,41);
 				disp[42] = "Enter length of overtime in minutes:";
-				disp[43] = "";
 				minor = 20;
 			}
 			else if (key == 's') {
 				clearStrings(0,41);
 				disp[42] = "Enter time to set to, in MMSS.D format:";
-				disp[43] = "";
 				minor = 30;
 			}
 			else if (key == 'r') {
 				clearStrings(0,41);
 				disp[42] = "Enter time to reset to in minutes:";
-				disp[43] = "";
 				minor = 40;
 			}
 			kbuf->clear();
@@ -201,45 +199,50 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 10:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				//float in = str2float(kbuf->fullbuf(), 0);
-				//int sign = in >= 0 ? 1 : -1;
-				//in = abs(in);
-				//float min = (float) floor(in / 100.0);
-				//float sec = in - min * 100;
-				int offset = str2time_signed(kbuf->fullbuf());
-				data->active_clock->adjust(offset);
+				ini = str2time_signed(kbuf->fullbuf());
+				if (ini != 0x80000000) {
+					data->active_clock->adjust(ini);
+					clear();
+				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 		case 20:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				int in = str2int( kbuf->fullbuf(), -1 );
-				if ( in > 0 ) data->otlen = in * 60 * 1000;
+				ini = str2int( kbuf->fullbuf(), -1 );
+				if ( ini > 0 ) {
+					data->otlen = ini * 60 * 1000;
+					clear();
+				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 		case 30:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				int time = str2time(kbuf->fullbuf());
-				if (time >= 0) data->active_clock->set(time);
+				ini = str2time(kbuf->fullbuf());
+				if (ini >= 0) {
+					data->active_clock->set(ini);
+					clear();
+				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 		case 40:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				float in = str2float(kbuf->fullbuf(), -1.0);
+				double in = str2float(kbuf->fullbuf(), -1.0f);
 				if ( in >= 0 ) {
 					int time = (int)(in * 60 * 1000);
 					data->active_clock->set(time);
+					clear();
 				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 	}
@@ -256,7 +259,7 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 	switch (minor) {
 		case 0:
 			clearStrings(0,43);
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+			disp[42] = STR_TEAM_SEL;
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -296,9 +299,10 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 				inb[1] = str2int(disp[43], -1);
 				if ( inb[1] != 0xff ) {
 					data->tm[inb[0]].sc = inb[1];
+					clear();
 				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 		case 20:
@@ -308,9 +312,10 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 				inb[1] = str2int(disp[43], -1);
 				if ( inb[1] != 0xff ) {
 					data->tm[inb[0]].sog = inb[1];
+					clear();
 				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 	}
@@ -324,7 +329,7 @@ void HockeyLogic::logicGAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[8] = "P: power play goal";
 			disp[9] = "S: shorthanded goal";
 			disp[10] = "E: even strength goal";
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+			disp[42] = STR_TEAM_SEL;
 			inb[1] = 0;
 			minor = 1;
 			kbuf->clear();
@@ -429,7 +434,7 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 	switch (minor) {
 		case 0:
 			clearStrings(0,43);
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+			disp[42] = STR_TEAM_SEL;
 			disp[7] = "1N: " + data->tm[0].name;
 			disp[8] = "1L: " + data->tm[0].lname;
 			disp[9] = "1F: " + data->tm[0].fname;
@@ -508,21 +513,7 @@ void HockeyLogic::logicNames(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 }
 
 void HockeyLogic::logicColors(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, HockeyDrop* drop) {
-	/*
-	switch (minor) {
-		case 0:
-			clearStrings(0,43);
-			disp[42] = "Function not yet implemented";
-			minor = 1;
-			kbuf->clear();
-			break;
-		case 1:
-			kbuf->clear();
-			clear();
-			break;
-	}
-	*/
-		int key;
+	int key;
 	bool valid = false;
 	switch (minor) {
 		case 0:
@@ -599,7 +590,7 @@ void HockeyLogic::logicRoster(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf,
 			disp[23] = "Number of rosters loaded: " + IniParser::int2str(data->rl->team_count());
 			disp[25] = "V: " + data->tm[0].rs + " (" + IniParser::int2str(data->rl->count(data->tm[0].rs)) + ")";
 			disp[26] = "H: " + data->tm[1].rs + " (" + IniParser::int2str(data->rl->count(data->tm[1].rs)) + ")";
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+			disp[42] = STR_TEAM_SEL;
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -637,7 +628,7 @@ void HockeyLogic::logicPAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 		case 0:
 			clearStrings(0,43);
 			ini = data->clock_last_stopped;
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+			disp[42] = STR_TEAM_SEL;
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -766,14 +757,17 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			disp[42] = "Enter letter:";
 			disp[43] = "";
 			disp[0] = "C: create";
-			disp[1] = "D: delete";
-			disp[2] = "";
-			disp[3] = "P: delete single penalty from queue";
-			disp[4] = "L: delete last penalty in queue";
-			disp[5] = "Q: edit queue";
-			disp[6] = "";
-			disp[7] = "G: goal scored, auto-delete if possible";
-			clearStrings(8,41);
+			disp[1] = "D: delete single penalty from queue";
+			disp[2] = "L: delete last penalty in queue";
+			disp[3] = "T: delete entire team's penalties";
+			disp[4] = "Q: edit queue";
+			disp[5] = "";
+			disp[6] = "S: set start time of penalty";
+			disp[7] = "E: set end time of penalty";
+			disp[8] = "A: adjust time of penalty";
+			disp[9] = "";
+			disp[10] = "G: goal scored, auto-delete if possible";
+			clearStrings(11,41);
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -782,28 +776,39 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			if ( key >= 'A' && key <= 'Z' ) key += 32;
 			if ( key == 'c' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:"; 
+				disp[42] = STR_TEAM_SEL; 
 				minor = 10;
 			}
-			else if ( key == 'd' ) { 
+			else if ( key == 't' ) { 
 				clearStrings(0,43);
-				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+				disp[42] = STR_TEAM_SEL;
 				minor = 20;
 			}
-			else if ( key == 'p' ) {
+			else if ( key == 'd' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+				disp[42] = STR_TEAM_SEL;
 				minor = 30;
 			}
 			else if ( key == 'l' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+				disp[42] = STR_TEAM_SEL;
 				minor = 40;
 			}
 			else if ( key == 'q' ) {
 				clearStrings(0,43);
-				disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
+				disp[42] = STR_TEAM_SEL;
 				minor = 50;
+			}
+			else if ( key == 's' || key == 'e' ) {
+				if ( key == 's' ) inb[3] = 1;
+				clearStrings(0,43);
+				disp[42] = STR_TEAM_SEL;
+				minor = 60;
+			}
+			else if ( key == 'a' ) {
+				clearStrings(0,43);
+				disp[42] = STR_TEAM_SEL;
+				minor = 70;
 			}
 			else if ( key == 'g' ) {
 				data->delPenaltyAuto();
@@ -842,12 +847,12 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
 				int time = str2time(kbuf->fullbuf());
-				if ( time > 0 ) {
+				if ( time >= 0 ) {
 					ini = time;
 					minor = 13;
 					disp[42] = "Enter penalty time in minutes:";
-					disp[43] = "";
 				}
+				disp[43] = "";
 				kbuf->clear();
 			}
 			break;
@@ -891,9 +896,10 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 				inb[1] = str2int(kbuf->fullbuf(), -1);
 				if (inb[1] >= 1 && inb[1] <= 16) {
 					data->delPenalty(inb[0], inb[1]-1);
+					clear();
 				}
+				disp[43] = "";
 				kbuf->clear();
-				clear();
 			}
 			break;
 		case 40:
@@ -926,6 +932,94 @@ void HockeyLogic::logicPTime(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 				data->editQueue(inb[0], kbuf->fullbuf());
 				kbuf->clear();
 				clear();
+			}
+			break;
+		case 60:
+			key = kbuf->last();
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
+				inb[0] = key - '1';
+				disp[42] = "Enter slot number (1-2):";
+				minor = 61;
+			}
+			kbuf->clear();
+			break;
+		case 61:
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				inb[1] = str2int(kbuf->fullbuf(), -1) - 1;
+				if (inb[1] < 2) {
+					disp[42] = "Enter period number (1-9), or press N for current time:";
+					minor = 62;
+				}
+				disp[43] = "";
+				kbuf->clear();
+			}
+			break;
+		case 62:
+			key = kbuf->last();
+			if ( key == 'n' || key == 'N' ) {
+				inb[1] = 0;
+				data->setPenaltyTime(inb[0], inb[1], data->period, data->clock.read(), inb[3] != 0);
+				clear();
+			}
+			if ( key >= '1' && key <= '9' ) {
+				inb[2] = key - '0';
+				disp[42] = "Enter ";
+				disp[42] += (inb[3] ? "start" : "end");
+				disp[42] += " time, in MMSS.D format:";
+				minor = 63;
+			}
+			kbuf->clear();
+			break;
+		case 63:
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				ini = str2time(kbuf->fullbuf());
+				if ( ini >= 0 ) {
+					data->setPenaltyTime(inb[0], inb[1], inb[2], ini, inb[3] != 0);
+					clear();
+				}
+				disp[43] = "";
+				kbuf->clear();
+			}
+			break;
+		case 70:
+			key = kbuf->last();
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'v' ) key = '1';
+			else if ( key == 'h') key = '2';
+			if ( key == '1' || key == '2' ) {
+				inb[0] = key - '1';
+				disp[42] = "Enter slot number (1-2):";
+				minor = 71;
+			}
+			kbuf->clear();
+			break;
+		case 71:
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				inb[1] = str2int(kbuf->fullbuf(), -1) - 1;
+				if (inb[1] < 2) {
+					disp[42] = "Enter time to adjust by, in [-]MMSS.D format:";
+					minor = 72;
+				}
+				disp[43] = "";
+				kbuf->clear();
+			}
+			break;
+		case 72:
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				ini = str2time_signed(kbuf->fullbuf());
+				if ( ini != 0x80000000 ) {
+					data->adjustPenaltyTime(inb[0], inb[1], ini);
+					clear();
+				}
+				disp[43] = "";
+				kbuf->clear();
 			}
 			break;
 	}
@@ -1014,14 +1108,10 @@ void HockeyLogic::logicText(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				inb[0] = str2int(kbuf->fullbuf(), -1);
 				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_USER_STATE) {
 					disp[42] = "Enter text string for slot " + kbuf->fullbuf() + ":";
-					disp[43] = "";
 					minor = 2;
-					kbuf->clear();
 				}
-				else {
-					disp[43] = "";
-					kbuf->clear();
-				}
+				disp[43] = "";
+				kbuf->clear();
 			}
 			break;
 		case 2:
@@ -1050,14 +1140,10 @@ void HockeyLogic::logicStat(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				inb[0] = str2int(kbuf->fullbuf(), -1);
 				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_USER_STATE) {
 					disp[42] = "Enter statistics values for teams (Format: V H):";
-					disp[43] = "";
 					minor = 2;
-					kbuf->clear();
 				}
-				else {
-					disp[43] = "";
-					kbuf->clear();
-				}
+				disp[43] = "";
+				kbuf->clear();
 			}
 			break;
 		case 2:
@@ -1125,11 +1211,13 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
 				inb[0] = str2int(kbuf->fullbuf(), -1);
-				if (inb[0] != -1) {
+				if (inb[0] != 0xff) {
 					data->ssync.port_close();
 					data->ssync.port_open(inb[0]);
+					clear();
 				}
-				clear();
+				disp[43] = "";
+				kbuf->clear();
 			}
 			break;
 		case 20:

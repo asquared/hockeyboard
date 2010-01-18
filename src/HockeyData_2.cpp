@@ -184,6 +184,18 @@ void HockeyData::delPenaltyAuto() {
 	if ( ac == 1 ) delPenalty(ai >> 1, ai & 1);
 }
 
+void HockeyData::setPenaltyTime(unsigned int team, unsigned int slot, int per, int time, bool start) {
+	if (team > 1 || slot > 1 || per < 1 || per > 9 || time < 0 || time > PERLEN) return;
+	pq[team].time[slot] = invertTime(per, time, PERLEN, otlen) + (start ? (60000 * pq[team].qm[slot]) : 0);
+	pq[team].split_queue();
+}
+
+void HockeyData::adjustPenaltyTime(unsigned int team, unsigned int slot, int time) {
+	if (team > 1 || slot > 1) return;
+	pq[team].time[slot] += time;
+	pq[team].split_queue();
+}
+
 void HockeyData::updatePenalty() {
 	int curr = invertTime(period, clock.read(), PERLEN, otlen);
 	int low = 0x7fffffff;

@@ -17,7 +17,7 @@ class HockeyLogic {
 private:
 	static const char* penalties[25];
 	static const char* gann[6];
-	unsigned char inb[2];		// variables that save the user's inputs.  inb[0] is usually the team.
+	unsigned char inb[4];		// variables that save the user's inputs.  inb[0] is usually the team.
 	int ini;					// variable that saves the user's input.  usually a clock value.
 	string input;
 
