@@ -19,14 +19,14 @@ string* Roster::get(int number) {
 		return roster[number];	
 	return 0;
 }
-void Roster::set(int number, string& name) {
+void Roster::set(int number, const string& name) {
 	if (number < 0 || number >= 100) return;
 	if (roster[number]) delete roster[number];
 	roster[number] = new string(name);
 }
 
 
-RosterList::RosterList(string& filename) {
+RosterList::RosterList(const string& filename) {
 	teams = new mapsr;
 	
 	IniParser ip;
@@ -69,7 +69,7 @@ RosterList::~RosterList() {
 	delete teams;
 }
 
-Roster* RosterList::get_roster(string& team) {
+Roster* RosterList::get_roster(const string& team) {
 	mapsr::iterator i = teams->find(team);
 	if (i != teams->end()) return i->second;
 	return blank;
@@ -83,7 +83,7 @@ string RosterList::get_string(Roster* r, int number) {
 	return string("");
 }
 
-string RosterList::get(string& team, int number) {
+string RosterList::get(const string& team, int number) {
 	mapsr::iterator i = teams->find(team);
 	if (number < 0 || number >= 100 || i == teams->end()) 
 		return string("");
@@ -94,7 +94,7 @@ unsigned int RosterList::team_count() {
 	return max((unsigned int) 1, (unsigned int) teams->size()) - 1;
 }
 
-unsigned int RosterList::count(string& team) {
+unsigned int RosterList::count(const string& team) {
 	Roster* r = get_roster(team);
 	if (r == 0 || r == blank) return 0;
 	int out = 0;

@@ -20,7 +20,7 @@ GLCairoSurface::GLCairoSurface(int width, int height) {
 	common_constructor();
 }
 
-GLCairoSurface::GLCairoSurface(std::string pngfilename) {
+GLCairoSurface::GLCairoSurface(const string& pngfilename) {
 	cs = cairo_image_surface_create_from_png(pngfilename.c_str());
 	if ( cairo_surface_status(cs) != CAIRO_STATUS_SUCCESS ) throw 1;
 	common_constructor();
@@ -117,7 +117,7 @@ void GLCairoSurface::color(int r, int g, int b) {
 	cairo_set_source_rgb(ct, fr/255.0, fg/255.0, fb/255.0);
 }
 
-bool GLCairoSurface::setfontface(std::string face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps) {
 	pango_font_description_set_family(pfd, face.c_str());
 	if (bold) pango_font_description_set_weight(pfd, PANGO_WEIGHT_BOLD);
 	else pango_font_description_set_weight(pfd, PANGO_WEIGHT_NORMAL);
@@ -128,7 +128,7 @@ bool GLCairoSurface::setfontface(std::string face, bool bold, bool italic, bool 
 	return true;
 }
 
-bool GLCairoSurface::setfontfacealt(unsigned int index, std::string face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoSurface::setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps) {
 	if (index < 0 || index > MAX_ALT) return false;
 	if (!pfda[index]) pfda[index] = pango_font_description_new();
 	pango_font_description_set_family(pfda[index], face.c_str());
@@ -160,7 +160,7 @@ bool GLCairoSurface::setaa(bool mode) {
 }
 
 
-bool GLCairoSurface::writetext(std::string& text, int x, int y, int align) {
+bool GLCairoSurface::writetext(const string& text, int x, int y, int align) {
 	if (!pfd) return false;
 	if (align < 0 || align > 2) return false;
 	PangoLayout* pl = pango_layout_new(pc);
@@ -175,7 +175,7 @@ bool GLCairoSurface::writetext(std::string& text, int x, int y, int align) {
 	return true;
 }
 
-bool GLCairoSurface::writetext(std::string& text, int x, int y, int align, int maxwidth) {
+bool GLCairoSurface::writetext(const string& text, int x, int y, int align, int maxwidth) {
 	if (!pfd) return false;
 	if (align < 0 || align > 2) return false;
 	PangoLayout* pl = pango_layout_new(pc);
@@ -191,7 +191,7 @@ bool GLCairoSurface::writetext(std::string& text, int x, int y, int align, int m
 	return true;
 }
 
-bool GLCairoSurface::writetextshrink(std::string& text, int x, int y_c, int align, int maxwidth) {
+bool GLCairoSurface::writetextshrink(const string& text, int x, int y_c, int align, int maxwidth) {
 	if (!pfd) return false;
 	if (align < 0 || align > 2) return false;
 	PangoLayout* pl = pango_layout_new(pc);

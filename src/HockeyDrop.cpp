@@ -11,6 +11,8 @@ inline void set_font_defaults_black(GLCairoSurface* glcs, int size) {
 	glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false);
 	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
 	//glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false);
+	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
+	//glcs->setfontfacealt(0, "DIN Next LT Pro Bold Condensed", false, false, false);
 	glcs->setfontsize(size);
 	glcs->color(19,19,19);
 }
@@ -79,6 +81,13 @@ HockeyDrop::~HockeyDrop() {
 	if (comp) delete comp;
 }
 
+void HockeyDrop::set_state(unsigned char type) {
+	if ( type >= MIN_USER_STATE && type <= MAX_USER_STATE ) 
+		user_state = type;
+	if ( state >= MIN_USER_STATE && state <= MAX_USER_STATE ) 
+		drop(user_state);
+}
+
 void HockeyDrop::drop(unsigned char type) {
 	if ( !moving && type >= 0 && type < MAX_LINES && state != type ) {
 		old_yellow = getyellow();
@@ -108,7 +117,7 @@ void HockeyDrop::toggle(unsigned char type) {
 	}
 }
 
-void HockeyDrop::setstring(unsigned char type, string& str) {
+void HockeyDrop::setstring(unsigned char type, const string& str) {
 	if ( type >= 0 && type < MAX_LINES ) lines[type] = str;
 }
 

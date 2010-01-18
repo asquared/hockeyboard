@@ -3,6 +3,7 @@
 inline void set_font_defaults(GLCairoSurface* glcs, int size) {
 	glcs->setfontface("Franklin Gothic Demi Cond", false, false, false);
 	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
+	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
 	glcs->setfontsize(size);
 	glcs->color(240,240,240);
 }
@@ -12,6 +13,8 @@ inline void set_font_alternate(GLCairoSurface* glcs, int size) {
 	glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false);
 	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
 	//glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false);
+	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
+	//glcs->setfontfacealt(0, "DIN Next LT Pro Bold Condensed", false, false, false);
 	glcs->setfontsize(size);
 	glcs->color(240,240,240);
 }

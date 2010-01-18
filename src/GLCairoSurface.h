@@ -17,6 +17,8 @@
 #include <string>
 #include <iostream>
 
+using std::string;
+
 class GLCairoSurface {
 
 private:
@@ -31,7 +33,7 @@ private:
 
 public:
 	GLCairoSurface(int width, int height);
-	GLCairoSurface(std::string pngfilename);
+	GLCairoSurface(const string& pngfilename);
 	~GLCairoSurface();
 
 	void common_constructor();
@@ -49,13 +51,13 @@ public:
 
 	void color(int r, int g, int b);
 
-	bool setfontface(std::string face, bool bold, bool italic, bool smallcaps);
-	bool setfontfacealt(unsigned int index, std::string face, bool bold, bool italic, bool smallcaps);
+	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps);
+	bool setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps);
 	bool setfontsize(int size);
 	bool setaa(bool mode);
-	bool writetext(std::string& text, int x, int y, int align);
-	bool writetext(std::string& text, int x, int y, int align, int maxwidth);
-	bool writetextshrink(std::string& text, int x, int y_c, int align, int maxwidth);
+	bool writetext(const string& text, int x, int y, int align);
+	bool writetext(const string& text, int x, int y, int align, int maxwidth);
+	bool writetextshrink(const string& text, int x, int y_c, int align, int maxwidth);
 
 };
 

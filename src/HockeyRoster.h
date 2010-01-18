@@ -17,7 +17,7 @@ public:
 	Roster();
 	~Roster();
 	string* get(int number);
-	void set(int number, string& name);
+	void set(int number, const string& name);
 };
 
 typedef map<string, Roster*> mapsr;
@@ -31,12 +31,12 @@ private:
 public:
 	RosterList() {}
 	~RosterList();
-	RosterList(string& filename);
-	Roster* get_roster(string& team);
+	RosterList(const string& filename);
+	Roster* get_roster(const string& team);
 	string get_string(Roster* r, int number);
-	string get(string& team, int number);
+	string get(const string& team, int number);
 	unsigned int team_count();
-	unsigned int count(string& team);
+	unsigned int count(const string& team);
 
 };
 

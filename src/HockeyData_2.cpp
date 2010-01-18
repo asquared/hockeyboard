@@ -265,7 +265,7 @@ void HockeyData::printPenalties(std::string* disp, freetype::font_data* base) {
 	for (unsigned int q = 0; q <= 1; ++q) {
 		for (unsigned int t = 0; t <= 1; ++t) {
 			base->print(360.0f + 360.0f*q, 400.0f-20.0f*t, 0, "%d --%2hu:%02hu  %2d  +%u",
-				2*q+t+1, pq[q].rem_m[t], pq[q].rem_s[t], pq[q].qm[t], pq[q].qt[t]);
+				t+1, pq[q].rem_m[t], pq[q].rem_s[t], pq[q].qm[t], pq[q].qt[t]);
 		}
 		for (int t = 2; t < MAX_QUEUE; ++t) {
 			if (pq[q].qm[t] > 0) ss << pq[q].qm[t] << ' ';

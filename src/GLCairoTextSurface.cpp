@@ -20,7 +20,7 @@ void GLCairoTextSurface::color(int r, int g, int b) {
 	}
 }
 
-bool GLCairoTextSurface::setfontface(std::string face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoTextSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps) {
 	format_change = true;
 	return GLCairoSurface::setfontface(face, bold, italic, smallcaps);
 }
@@ -30,7 +30,7 @@ bool GLCairoTextSurface::setfontsize(int size) {
 	return GLCairoSurface::setfontsize(size);
 }
 
-bool GLCairoTextSurface::writetext(std::string& text, int x, int y, int align) {
+bool GLCairoTextSurface::writetext(const string& text, int x, int y, int align) {
 	bool out = false;
 	//std::cout << text << " " << last << std::endl;
 	if (text == last && !format_change) return false;
@@ -43,7 +43,7 @@ bool GLCairoTextSurface::writetext(std::string& text, int x, int y, int align) {
 	return out;
 }
 
-bool GLCairoTextSurface::writetext(std::string& text, int x, int y, int align, int maxwidth) {
+bool GLCairoTextSurface::writetext(const string& text, int x, int y, int align, int maxwidth) {
 	bool out = false;
 	//std::cout << text << " " << last << std::endl;
 	if (text == last && !format_change) return false;
@@ -56,7 +56,7 @@ bool GLCairoTextSurface::writetext(std::string& text, int x, int y, int align, i
 	return out;
 }
 
-bool GLCairoTextSurface::writetextshrink(std::string& text, int x, int y_c, int align, int maxwidth) {
+bool GLCairoTextSurface::writetextshrink(const string& text, int x, int y_c, int align, int maxwidth) {
 	bool out = false;
 	//std::cout << text << " " << last << std::endl;
 	if (text == last && !format_change) return false;

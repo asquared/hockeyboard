@@ -6,7 +6,7 @@
 class GLCairoTextSurface : public GLCairoSurface {
 
 private:
-	std::string last;
+	string last;
 	int last_r, last_g, last_b;
 	bool format_change;
 
@@ -26,11 +26,11 @@ public:
 
 	void color(int r, int g, int b);
 
-	bool setfontface(std::string face, bool bold, bool italic, bool smallcaps);
+	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps);
 	bool setfontsize(int size);
-	bool writetext(std::string& text, int x, int y, int align);
-	bool writetext(std::string& text, int x, int y, int align, int maxwidth);
-	bool writetextshrink(std::string& text, int x, int y_c, int align, int maxwidth);
+	bool writetext(const string& text, int x, int y, int align);
+	bool writetext(const string& text, int x, int y, int align, int maxwidth);
+	bool writetextshrink(const string& text, int x, int y_c, int align, int maxwidth);
 
 };
 

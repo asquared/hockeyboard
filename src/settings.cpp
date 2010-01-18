@@ -77,14 +77,14 @@ void load_settings(const char* filename) {
 		if (temp_int > 0) data->ssync.port_open(temp_int);
 	}
 	if (ip.get("Sync", "StartDelay", in)) {
-		temp_int = 0;
+		temp_int = 0x80000000;
 		IniParser::parse(in, temp_int);
-		if (temp_int > 0) data->start_delay = temp_int;
+		if (temp_int != 0x80000000) data->start_delay = temp_int;
 	}
 	if (ip.get("Sync", "StopDelay", in)) {
-		temp_int = 0;
+		temp_int = 0x80000000;
 		IniParser::parse(in, temp_int);
-		if (temp_int > 0) data->stop_delay = temp_int;
+		if (temp_int != 0x80000000) data->stop_delay = temp_int;
 	}
 
 	string team[2];
@@ -92,8 +92,14 @@ void load_settings(const char* filename) {
 	team[1] = "Home";
 	// Team section
 	for (int i = 0; i < 2; ++i) {
-		if (ip.get(team[i], "Name", in)) data->tm[i].name = in;
-		if (ip.get(team[i], "LongName", in)) data->tm[i].lname = in;
+		if (ip.get(team[i], "Name", in)) {
+			data->tm[i].name = in;
+			drop->setstring(SI_TO_V + i, in + " TIMEOUT");
+		}
+		if (ip.get(team[i], "LongName", in)) {
+			data->tm[i].lname = in;
+			drop->setstring(SI_TO_V + i, in + " TIMEOUT");
+		}
 		if (ip.get(team[i], "FullName", in)) data->tm[i].fname = in;
 		if (ip.get(team[i], "RosterName", in)) data->tm[i].rs = in;
 		if (ip.get(team[i], "BackColor", in)) {
@@ -125,6 +131,13 @@ void load_settings(const char* filename) {
 					hd->name[i]->color(r,g,b);
 				}
 			}
+		}
+	}
+
+	// Text section
+	for (int i = MIN_USER_STATE; i <= MAX_USER_STATE; ++i) {
+		if (ip.get("Text", IniParser::to_str(i), in)) {
+			drop->setstring(i, in);
 		}
 	}
 }

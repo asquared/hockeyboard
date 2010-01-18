@@ -15,8 +15,8 @@ class HockeyLogic {
 	typedef void (HockeyLogic::*guifunc)(HockeyData*, HockeyDraw*, Keybuffer*, HockeyDrop*);
 
 private:
-	string penalties[25];
-	string gann[6];
+	static const char* penalties[25];
+	static const char* gann[6];
 	unsigned char inb[2];		// variables that save the user's inputs.  inb[0] is usually the team.
 	int ini;					// variable that saves the user's input.  usually a clock value.
 	string input;
@@ -59,5 +59,6 @@ public:
 	void selectMajor(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, HockeyDrop* drop);
 
 };
+
 
 #endif

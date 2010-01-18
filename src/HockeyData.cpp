@@ -133,7 +133,7 @@ bool HockeyData::getRedFlash() {
 
 void HockeyData::startRedFlash(unsigned char team) {
 	if (red_flash_clock.read() == 0) {
-		++tm[team].sc;
+		if ( tm[team].sc < 255 ) ++tm[team].sc;
 		red_flash_team = team;
 		red_flash_clock.set(FLASH_LEN);
 		red_flash_clock.start();

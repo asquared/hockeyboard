@@ -2,40 +2,44 @@
 #include <iostream>
 #include <sstream>
 
+const char* HockeyLogic::penalties[] = { 
+	"HITTING FROM BEHIND",
+	"BOARDING",
+	"CHARGING",
+	"DELAY OF GAME", 
+	"ELBOWING",
+	"FIGHTING", 
+	"GOALTENDER INT.", 
+	"HOLDING",
+	"INTERFERENCE", 
+	"HOLDING THE STICK", 
+	"HOOKING", 
+	"CLIPPING",
+	"TOO MANY MEN", 
+	"KNEEING", 
+	"OBSTRUCTION", 
+	"SPEARING", 
+	"BODY CHECKING", 
+	"ROUGHING", 
+	"SLASHING", 
+	"TRIPPING", 
+	"UNSPORTSMANLIKE", 
+	"DIVING", 
+	"HITTING AFTER WHISTLE", 
+	"CROSS-CHECKING", 
+	"HIGH STICKING" 
+};
+
+const char* HockeyLogic::gann[] = {
+	"G: ",
+	"A: ",
+	"A: ",
+	"",
+	" PP",
+	" SH"
+};
+
 HockeyLogic::HockeyLogic() {
-	penalties[0] = "HITTING FROM BEHIND";
-	penalties[1] = "BOARDING";
-	penalties[2] = "CHARGING";
-	penalties[3] = "DELAY OF GAME"; 
-	penalties[4] = "ELBOWING";
-	penalties[5] = "FIGHTING"; 
-	penalties[6] = "GOALTENDER INT."; 
-	penalties[7] = "HOLDING"; 
-	penalties[8] = "INTERFERENCE"; 
-	penalties[9] = "HOLDING THE STICK"; 
-	penalties[10] = "HOOKING"; 
-	penalties[11] = "CLIPPING"; 
-	penalties[12] = "TOO MANY MEN"; 
-	penalties[13] = "KNEEING"; 
-	penalties[14] = "OBSTRUCTION"; 
-	penalties[15] = "SPEARING"; 
-	penalties[16] = "BODY CHECKING"; 
-	penalties[17] = "ROUGHING"; 
-	penalties[18] = "SLASHING"; 
-	penalties[19] = "TRIPPING"; 
-	penalties[20] = "UNSPORTSMANLIKE"; 
-	penalties[21] = "DIVING"; 
-	penalties[22] = "HITTING AFTER WHISTLE"; 
-	penalties[23] = "CROSS-CHECKING"; 
-	penalties[24] = "HIGH STICKING";
-
-	gann[0] = "G: ";
-	gann[1] = "A: ";
-	gann[2] = "A: ";
-	gann[3] = "";
-	gann[4] = " PP";
-	gann[5] = " SH";
-
 	inb[0] = 0;
 	inb[1] = 0;
 
@@ -116,7 +120,7 @@ void HockeyLogic::clear() {
 	disp[5] = "Ctrl-R: Set team rosters";
 	disp[6] = "Ctrl-S: Make statistics line";
 	disp[7] = "";
-	disp[8] = "Ctrl-G: Adjust goals";
+	disp[8] = "Ctrl-G: Adjust goals/shots";
 	disp[9] = "Ctrl-A: Announce goal";
 	disp[10] = "";
 	disp[11] = "Ctrl-K: Change key colors";
@@ -252,7 +256,7 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 	switch (minor) {
 		case 0:
 			clearStrings(0,43);
-			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team";
+			disp[42] = "Enter 1 or V for visiting team, 2 or H for home team:";
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -263,18 +267,47 @@ void HockeyLogic::logicGoals(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			else if ( key == 'h') key = '2';
 			if ( key == '1' || key == '2' ) {
 				inb[0] = key - '1';
-				disp[42] = "Enter number of goals";
+				disp[10] = "G: goals";
+				disp[11] = "S: shots on goal";
+				disp[42] = "Enter choice:";
 				minor = 2;
 			}
 			kbuf->clear();
 			break;
 		case 2:
+			key = kbuf->last();
+			if ( key >= 'A' && key <= 'Z') key += 32;
+			if ( key == 'g' ) {
+				clearStrings(10,11);
+				disp[42] = "Enter number of goals:";
+				minor = 10;
+			}
+			else if ( key == 's' ) {
+				clearStrings(10,11);
+				disp[42] = "Enter number of shots on goal:";
+				minor = 20;
+			}
+			kbuf->clear();
+			break;
+		case 10:
 			clearStrings(0,41);
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
 				inb[1] = str2int(disp[43], -1);
 				if ( inb[1] != 0xff ) {
 					data->tm[inb[0]].sc = inb[1];
+				}
+				kbuf->clear();
+				clear();
+			}
+			break;
+		case 20:
+			clearStrings(0,41);
+			disp[43] = kbuf->fullbuf();
+			if ( kbuf->enter() ) {
+				inb[1] = str2int(disp[43], -1);
+				if ( inb[1] != 0xff ) {
+					data->tm[inb[0]].sog = inb[1];
 				}
 				kbuf->clear();
 				clear();
@@ -335,7 +368,7 @@ void HockeyLogic::logicGAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				for (unsigned int i = 0; i < min(3, vs.size()); ++i) {
 					nums[i] = str2int(vs[i], -1);
 					if ( nums[i] != -1 ) 
-						drop->setstring(13+i, gann[i] + "#" + vs[i] + " " + 
+						drop->setstring(13+i, string(gann[i]) + "#" + vs[i] + " " + 
 						data->rl->get(data->tm[inb[0]].rs, nums[i]) );
 					else drop->setstring(13+i, string(""));
 				}
@@ -702,9 +735,7 @@ void HockeyLogic::logicPAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[43] = "";
 			key = kbuf->last();
 			unsigned char min = 0;
-			if ( key == '2' ) min = 2;
-			else if ( key == '4' ) min = 4;
-			else if ( key == '5' ) min = 5;
+			if ( key >= '1' && key <= '9') min = key - '0';
 			if ( min != 0 || kbuf->enter() ) {
 				if ( min != 0 ) data->addPenalty( inb[0], data->period, ini, min );
 				for (int i = 3; i <= 11; ++i) drop->setstring(i-3, drop->getstring(i));
@@ -956,9 +987,11 @@ void HockeyLogic::logicReset(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			if (key == 'y' || key == 'Y') {
 				data->clock.set(data->PERLEN);
 				data->period = 1;
-				data->tm[0].sc = 0;
-				data->tm[1].sc = 0;
-				for ( int i = 0; i < 2; ++i ) data->delPenalty(i);
+				for ( int i = 0; i < 2; ++i ) {
+					data->delPenalty(i);
+					data->tm[i].sc = 0;
+					data->tm[i].sog = 0;
+				}
 				data->pt_low_index = 0;
 			}
 			kbuf->clear();

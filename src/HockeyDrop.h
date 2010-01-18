@@ -50,11 +50,11 @@ public:
 	HockeyDrop();
 	HockeyDrop(int xin, int yin);
 	~HockeyDrop();
-	void loadBitmap(unsigned char type, GLCairoSurface* bitmap);
+	void set_state(unsigned char type);
 	void drop(unsigned char type);
 	void raise();
 	void toggle(unsigned char type);
-	void setstring(unsigned char type, string& str);
+	void setstring(unsigned char type, const string& str);
 	string getstring(signed short line);
 	void settime(short min_in, short sec_in);
 	float display(GLCairoSurface* main);
