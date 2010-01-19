@@ -1,5 +1,8 @@
 #include "HockeyData.h"
+
+#ifdef _MSC_VER
 #define snprintf _snprintf   // stupid Microsoft
+#endif
 
 // text functions
 

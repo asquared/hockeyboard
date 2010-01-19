@@ -1,5 +1,11 @@
 #include "HockeyLogic.h"
 #include <iostream>
+#include <limits>
+
+const double D_NAN = numeric_limits<double>::quiet_NaN();
+#ifdef _MSC_VER 
+#define isnan _isnan	// stupid Microsoft
+#endif
 
 const char* HockeyLogic::penalties[] = { 
 	"HITTING FROM BEHIND",
@@ -86,22 +92,20 @@ int str2int(const string& s, int def) {
 
 int str2time(const string& s) {
 	double in = str2float(s, -1.0f);
-	if ( in >= 0 ) {
-		double min = floor(in / 100.0);
-		double sec = in - min * 100.0;
-		return (int)(min * 60000.0 + sec * 1000.0);
-	}
-	else return -1;
+	if ( in < 0 ) return -1;
+	double min = floor(in / 100.0);
+	double sec = in - min * 100.0;
+	return (int)(min * 60000.0 + sec * 1000.0 + 0.5);
 }
 
 int str2time_signed(const string& s) {
-	double in = str2float(s, DBL_MAX);
-	if (in == DBL_MAX) return 0x80000000;
+	double in = str2float(s, D_NAN);
+	if (isnan(in)) return 0x80000000;
 	int sign = in >= 0 ? 1 : -1;
 	in = abs(in);
 	double min = floor(in / 100.0);
 	double sec = in - min * 100.0;
-	return sign*(int)(min * 60000.0 + sec * 1000.0);
+	return sign*(int)(min * 60000.0 + sec * 1000.0 + 0.5);
 }
 
 void HockeyLogic::clearStrings(int low, int high) {
