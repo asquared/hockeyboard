@@ -165,8 +165,8 @@ void make2d() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	//glOrtho(0.0f, 1400.0f, 0.0f, 1050.0f, 0.0f, 1.0f);
-	glOrtho(0.0f, 1280.0f, 0.0f, 1024.0f, 0.0f, 1.0f);
-	//glOrtho(0.0f, 1024.0f, 0.0f, 768.0f, 0.0f, 1.0f);
+	//glOrtho(0.0f, 1280.0f, 0.0f, 1024.0f, 0.0f, 1.0f);
+	glOrtho(0.0f, 1024.0f, 0.0f, 768.0f, 0.0f, 1.0f);
 	glPopMatrix();
 	glMatrixMode(oldmode);
 }
@@ -181,8 +181,8 @@ int main( int argc, char* argv[] ) {
     glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
 
 	//glutGameModeString( "1400x1050:32@60" );
-	glutGameModeString( "1280x1024:32@60" );
-	//glutGameModeString( "1024x768:32@60" );
+	//glutGameModeString( "1280x1024:32@60" );
+	glutGameModeString( "1024x768:32@60" );
     // start fullscreen game mode
     glutEnterGameMode();
 
