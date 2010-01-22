@@ -52,7 +52,7 @@ HockeyData::HockeyData() {
 	stop_delay = 0;
 	allow_quit = false;
 
-	roster_file = "";
+	roster_file = " ";
 	rl = new RosterList(roster_file);
 
 	// debug

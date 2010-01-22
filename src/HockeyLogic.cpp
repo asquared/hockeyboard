@@ -740,7 +740,7 @@ void HockeyLogic::logicPAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 					player_name = "#" + IniParser::int2str(inb[1]) + " " + player_name;
 					drop->setstring(40, player_name);
 				}
-				else if (inb[1] == 254){ 
+				else if (inb[1] == 254) {
 					player_name = "BENCH MINOR";
 					drop->setstring(40, player_name);
 				}
