@@ -1,7 +1,7 @@
 #include "main.h"
 
 // jump to state using Alt-number
-const int jumpstate[] = {40, 0, 3, 6, 9, 12, 16, 20, 24, 32};
+const int jumpstate[] = {46, 0, 6, 12, 20, 30, 33, 36, 39, 42};
 
 const int penaltykeys[] = {'p',';','[','\'','P',':','{','\"'};
 

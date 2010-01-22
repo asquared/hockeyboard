@@ -363,6 +363,8 @@ void HockeyLogic::logicGAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			clearStrings(0,41);
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
+				// move up
+				for (unsigned int i = 42; i < 46; ++i) drop->setstring(i, drop->getstring(i+4));
 				// parse
 				vector<string> vs;
 				int nums[3] = { -1, -1, -1 };
@@ -373,11 +375,11 @@ void HockeyLogic::logicGAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				for (unsigned int i = 0; i < min(3, vs.size()); ++i) {
 					nums[i] = str2int(vs[i], -1);
 					if ( nums[i] != -1 ) 
-						drop->setstring(13+i, string(gann[i]) + "#" + vs[i] + " " + 
+						drop->setstring(47+i, string(gann[i]) + "#" + vs[i] + " " + 
 						data->rl->get(data->tm[inb[0]].rs, nums[i]) );
-					else drop->setstring(13+i, string(""));
+					else drop->setstring(47+i, string(""));
 				}
-				drop->setstring(12, data->tm[inb[0]].lname + gann[3+inb[1]] + " GOAL");
+				drop->setstring(46, data->tm[inb[0]].lname + gann[3+inb[1]] + " GOAL");
 				kbuf->clear();
 				clear();
 			}
@@ -729,18 +731,18 @@ void HockeyLogic::logicPAnn(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			if ( key >= '1' && key <= '9') min = key - '0';
 			if ( min != 0 || kbuf->enter() ) {
 				if ( min != 0 ) data->addPenalty( inb[0], data->period, ini, min );
-				for (int i = 3; i <= 11; ++i) drop->setstring(i-3, drop->getstring(i));
-				drop->setstring(9, data->tm[inb[0]].lname + " PENALTY");
-				drop->setstring(10, input);
-				drop->setstring(11, input);
+				for (int i = 33; i <= 41; ++i) drop->setstring(i-3, drop->getstring(i));
+				drop->setstring(39, data->tm[inb[0]].lname + " PENALTY");
+				drop->setstring(40, input);
+				drop->setstring(41, input);
 				string player_name = data->rl->get(data->tm[inb[0]].rs, inb[1]);
 				if (player_name != "") {
 					player_name = "#" + IniParser::int2str(inb[1]) + " " + player_name;
-					drop->setstring(10, player_name);
+					drop->setstring(40, player_name);
 				}
 				else if (inb[1] == 254){ 
 					player_name = "BENCH MINOR";
-					drop->setstring(10, player_name);
+					drop->setstring(40, player_name);
 				}
 				clear();
 			}

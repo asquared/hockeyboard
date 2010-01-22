@@ -126,6 +126,13 @@ string HockeyDrop::getstring(signed short line) {
 	return string("");
 }
 
+char HockeyDrop::getid(unsigned char line) {
+	if (line < 30) return ' ';
+    else if (line <= 41) return 'P';
+	else if (line <= 49) return 'G';
+	else return ' ';
+}
+
 void HockeyDrop::settime(short min_in, short sec_in) {
 	min = min_in;
 	sec = sec_in;

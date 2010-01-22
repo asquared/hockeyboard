@@ -91,12 +91,13 @@ void display() {
 	base->qprint(110, 480, 0, "%-5s %3hhu   %3hhu", d.tm[0].name.substr(0,5).c_str(), d.tm[0].sc, d.tm[0].sog);
 	base->qprint(110, 460, 0, "%-5s %3hhu   %3hhu", d.tm[1].name.substr(0,5).c_str(), d.tm[1].sc, d.tm[1].sog);
 
-	// drop text strings (8-39)
+	// drop text strings (0-49)
 	signed short curr_state = drop->user_state;
-	base->print(360, 500, 0, "\x10");
+	base->print(340, 500, 0, "\x10");
 	for (int i = 0; i <= 3; ++i) {
 		if (curr_state + i <= MAX_USER_STATE)
-			base->print(380, 500-20*i, 0, "%2hhd: %s", curr_state+i, drop->getstring(curr_state+i).substr(0,30).c_str());
+			base->print(360, 500-20*i, 0, "%c %2hhd: %s", 
+			drop->getid(curr_state+i), curr_state+i, drop->getstring(curr_state+i).substr(0,30).c_str());
 	}
 
 	// UI strings (0-41)
