@@ -12,7 +12,7 @@ void load_settings(const char* filename) {
 		IniParser::parse(in, temp_int);
 		if (temp_int <= 0) temp_int = 1200;
 		temp_int *= 1000;
-		data->PERLEN = temp_int;
+		data->perlen = temp_int;
 		data->clock.set(temp_int);
 	}
 	if (ip.get("General", "IntermissionLength", in)) {
@@ -20,7 +20,7 @@ void load_settings(const char* filename) {
 		IniParser::parse(in, temp_int);
 		if (temp_int <= 0) temp_int = 720;
 		temp_int *= 1000;
-		data->INTLEN = temp_int;
+		data->intlen = temp_int;
 		data->int_clock.set(temp_int);
 	}
 	if (ip.get("General", "OvertimeLength", in)) {

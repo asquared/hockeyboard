@@ -8,6 +8,10 @@
 #include <string>
 #include <sstream>
 
+#ifdef _MSC_VER
+#define snprintf _snprintf   // stupid Microsoft
+#endif
+
 // default period length is 20 min
 //const int PERLEN = 20 * 60 * 1000;
 // intermission length is 12 min
@@ -24,32 +28,6 @@ string getclock(int min, int sec, int tenths);
 
 // 'time' is time since start of 1st period at which the penalty ends.
 // queue is all zeros if fully inactive.
-/*
-struct PenaltyTimer {
-	int time;
-	short queue_min[MAX_QUEUE];
-	unsigned short rem_m;
-	unsigned short rem_s;
-	bool lowrem;
-
-	bool active() { 
-		if ( queue_min[0] > 0 || queue_min[0] < 0 && queue_min[1] > 0 ) return true;
-		else return false;
-	}
-	int count() {
-		int out = 0;
-		for (int q = 0; q < MAX_QUEUE; ++q) if ( queue_min[q] > 0 ) ++out;
-		return out;
-	}
-	int queued_time() {
-		int out = 0;
-		for (int q = 1; q < MAX_QUEUE; ++q) out += 60000*queue_min[q];
-		return out;
-		//return 60*1000*(queue_min[1] + queue_min[2] + queue_min[3]);
-	}
-};
-*/
-
 class PenaltyQueue {
 	friend class HockeyData;		// avoiding a huge mess
 
@@ -64,15 +42,13 @@ private:
 	int pop_queue(int slot, int curr, int time_mode);	// pop penalty from queue, returns time, or zero if empty
 	int push_queue(int min);							// push penalty to queue, returns position of added penalty
 
-	bool active() {
-		if (qm[0] > 0 || qm[1] > 0) return true;
-		return false;
+	inline bool active() {
+		return (qm[0] > 0 || qm[1] > 0);
 	}
-	bool active(unsigned int t) {
-		if (t < MAX_QUEUE && qm[t] > 0) return true;
-		return false;
+	inline bool active(unsigned int t) {
+		return (t < MAX_QUEUE && qm[t] > 0);
 	}
-	int count() {
+	inline int count() {
 		int out = 0;
 		for (int q = 0; q < MAX_QUEUE; ++q) if (qm[0] > 0) ++out;
 		return out;
@@ -97,7 +73,7 @@ public:
 	//unsigned char sc[2];
 	TeamData tm[2];
 	unsigned char period;
-	int PERLEN, INTLEN;				// former constants
+	int perlen, intlen;				// former constants
 	int otlen;						// overtime length (5 or 20 min, but in ms)
 	int clock_last_stopped;
 	Mclock clock;

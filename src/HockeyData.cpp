@@ -1,9 +1,5 @@
 #include "HockeyData.h"
 
-#ifdef _MSC_VER
-#define snprintf _snprintf   // stupid Microsoft
-#endif
-
 // text functions
 
 std::string int2str(int i) {
@@ -32,14 +28,14 @@ HockeyData::HockeyData() {
 	tm[0].sc = tm[1].sc = 0;
 	tm[0].sog = tm[1].sog = 0;
 	period = 1;
-	PERLEN = 20 * 60 * 1000;
-	INTLEN = 12 * 60 * 1000;
+	perlen = 20 * 60 * 1000;
+	intlen = 12 * 60 * 1000;
 	otlen = 5 * 60 * 1000;
 	clock.setmode(Mclock::DOWN);
-	clock.set(PERLEN);
+	clock.set(perlen);
 	clock_last_stopped = clock.read();
 	int_clock.setmode(Mclock::DOWN);
-	int_clock.set(INTLEN);
+	int_clock.set(intlen);
 	active_clock = &clock;
 	red_flash_clock.setmode(Mclock::DOWN);
 	red_flash_clock.set(0);

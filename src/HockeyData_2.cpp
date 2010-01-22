@@ -1,10 +1,10 @@
 #include "HockeyData.h"
 
-int invertTime( unsigned char period, int timeleft, int PERLEN, int otlen ) {
+int invertTime( unsigned char period, int timeleft, int perlen, int otlen ) {
 	// figure out time until next change of status
-	int out = (period-1) * PERLEN + ( PERLEN - timeleft );
+	int out = (period-1) * perlen + ( perlen - timeleft );
 	// overtime adjust
-	if ( period > 3 && otlen < PERLEN ) out -= (period - 3) * (PERLEN - otlen);
+	if ( period > 3 && otlen < perlen ) out -= (period - 3) * (perlen - otlen);
 	return out;
 }
 
@@ -54,7 +54,7 @@ int PenaltyQueue::push_queue(int min) {
 }
 
 void HockeyData::addPenalty(unsigned char team, unsigned char beginperiod, int begintime, int min) {
-	int curr = invertTime(beginperiod, begintime, PERLEN, otlen);
+	int curr = invertTime(beginperiod, begintime, perlen, otlen);
 	unsigned int slot = pq[team].push_queue(min);
 	if ( slot < 2 ) {
 		pq[team].time[slot] = curr + min * 60000;
@@ -96,7 +96,7 @@ void HockeyData::delPenalty(unsigned int team) {
 // Delete single penalty
 void HockeyData::delPenalty(unsigned int team, unsigned int slot) {
 	if (team >= 2 || slot >= MAX_QUEUE) return;
-	int curr = invertTime(period, clock.read(), PERLEN, otlen);
+	int curr = invertTime(period, clock.read(), perlen, otlen);
 	bool partial = false;
 
 	if (pq[team].qm[slot] >= 4 && !(pq[team].qm[slot] & 1)) {
@@ -110,13 +110,15 @@ void HockeyData::delPenalty(unsigned int team, unsigned int slot) {
 
 	if (slot == 0 || slot == 1) {
 		if (partial) {
-			if (pq[team].time[slot] - curr > pq[team].qm[slot] * 60000) 
+			//int rem = pq[team].time[slot] - curr;
+			//pq[team].qm[slot] = min( pq[team].qm[slot], rem / 120000 * 2 );
+			if (pq[team].time[slot] - curr > pq[team].qm[slot] * 60000) {
 				pq[team].time[slot] = curr + pq[team].qm[slot] * 60000;
+			}
 		}
 		else {
 			pq[team].pop_queue(slot, curr, 1);
 			//pq[team].time[slot] = curr + pq[team].qm[slot] * 60000;
-			//pq[team].split_queue();
 		}
 	}
 	else {
@@ -151,7 +153,7 @@ void HockeyData::editQueue(unsigned int team, std::string qstr) {
 	}
 
 	// set
-	int curr = invertTime(period, clock.read(), PERLEN, otlen);
+	int curr = invertTime(period, clock.read(), perlen, otlen);
 	for ( int i = 0; i < MAX_QUEUE; ++i ) {
 		if (nums[i] > 0 && nums[i] < 99) {
 			if (i < 2) {
@@ -185,8 +187,8 @@ void HockeyData::delPenaltyAuto() {
 }
 
 void HockeyData::setPenaltyTime(unsigned int team, unsigned int slot, int per, int time, bool start) {
-	if (team > 1 || slot > 1 || per < 1 || per > 9 || time < 0 || time > PERLEN) return;
-	pq[team].time[slot] = invertTime(per, time, PERLEN, otlen) + (start ? (60000 * pq[team].qm[slot]) : 0);
+	if (team > 1 || slot > 1 || per < 1 || per > 9 || time < 0 || time > perlen) return;
+	pq[team].time[slot] = invertTime(per, time, perlen, otlen) + (start ? (60000 * pq[team].qm[slot]) : 0);
 	pq[team].split_queue();
 }
 
@@ -197,7 +199,7 @@ void HockeyData::adjustPenaltyTime(unsigned int team, unsigned int slot, int tim
 }
 
 void HockeyData::updatePenalty() {
-	int curr = invertTime(period, clock.read(), PERLEN, otlen);
+	int curr = invertTime(period, clock.read(), perlen, otlen);
 	int low = 0x7fffffff;
 	int rem;
 	for (int q = 0; q < 2; ++q) {
@@ -209,18 +211,17 @@ void HockeyData::updatePenalty() {
 			if (qm != 0) rem = pq[q].time[t] - curr;			// update clock
 
 			// kill combinations (i.e. 4 = 2+2, 7 = 5+2, etc.)
-			if (qm >= 4 && qm < 10 && !(qm & 1)) {
+/*			if (qm >= 4 && qm < 10 && !(qm & 1)) {
 				if (rem <= (qm - 2) * 60000) qm -= 2;
 			}
 			else if (qm >= 7 && (qm & 1)) {
 				if (rem <= (qm - 5) * 60000) qm -= 5;
 			}
-
+*/
 			// kill front of queue (and pop the next into the front) at right time
 			if (qt != 0 && rem <= 0) {
 				pq[q].pop_queue(t, curr, 0);
 				//pq[q].time[t] += pq[q].qm[t] * 60000;
-				//pq[q].split_queue();
 				rem = pq[q].time[t] - curr;
 			}
 

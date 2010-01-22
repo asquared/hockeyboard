@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <limits>
 #include "HockeyData.h"
 #include "HockeyDraw.h"
 #include "HockeyDrop.h"
@@ -10,6 +11,11 @@
 
 using std::string;
 using std::stringstream;
+
+const double D_NAN = numeric_limits<double>::quiet_NaN();
+#ifdef _MSC_VER 
+#define isnan _isnan	// stupid Microsoft
+#endif
 
 class HockeyLogic {
 	typedef void (HockeyLogic::*guifunc)(HockeyData*, HockeyDraw*, Keybuffer*, HockeyDrop*);

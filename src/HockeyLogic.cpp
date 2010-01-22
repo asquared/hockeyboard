@@ -1,11 +1,5 @@
 #include "HockeyLogic.h"
 #include <iostream>
-#include <limits>
-
-const double D_NAN = numeric_limits<double>::quiet_NaN();
-#ifdef _MSC_VER 
-#define isnan _isnan	// stupid Microsoft
-#endif
 
 const char* HockeyLogic::penalties[] = { 
 	"HITTING FROM BEHIND",
@@ -169,7 +163,9 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 			disp[2] = "R: reset clock";
 			disp[3] = "O: set overtime length";
 			clearStrings(4,16);
-			disp[17] = IniParser::int2str(data->otlen / 60000);
+			char buf[8];
+			snprintf(buf, 8, "%d:%02d", data->otlen / 60000, (data->otlen % 60000) / 1000);
+			disp[17] = buf;
 			clearStrings(18,41);
 			disp[42] = "Enter choice:";
 			disp[43] = "";
@@ -215,9 +211,9 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 20:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				ini = str2int( kbuf->fullbuf(), -1 );
-				if ( ini > 0 ) {
-					data->otlen = ini * 60 * 1000;
+				double in = str2float( kbuf->fullbuf(), -1.0 );
+				if ( in > 0 ) {
+					data->otlen = (int) (in * 60000.0);
 					clear();
 				}
 				disp[43] = "";
@@ -239,9 +235,9 @@ void HockeyLogic::logicClock(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 40:
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
-				double in = str2float(kbuf->fullbuf(), -1.0f);
+				double in = str2float(kbuf->fullbuf(), -1.0);
 				if ( in >= 0 ) {
-					int time = (int)(in * 60 * 1000);
+					int time = (int)(in * 60000.0);
 					data->active_clock->set(time);
 					clear();
 				}
@@ -1054,7 +1050,7 @@ void HockeyLogic::logicPeriod(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf,
 				++(data->period);
 				if ( data->period > 127 ) data->period = 1;
 				else if ( data->period > 9 ) data->period = 9;
-				if ( data->period < 4 ) data->clock.set(data->PERLEN);
+				if ( data->period < 4 ) data->clock.set(data->perlen);
 				else data->clock.set(data->otlen);
 				clear();
 			}
@@ -1083,7 +1079,7 @@ void HockeyLogic::logicReset(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 		case 1:
 			key = kbuf->last();
 			if (key == 'y' || key == 'Y') {
-				data->clock.set(data->PERLEN);
+				data->clock.set(data->perlen);
 				data->period = 1;
 				for ( int i = 0; i < 2; ++i ) {
 					data->delPenalty(i);
