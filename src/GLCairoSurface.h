@@ -30,6 +30,8 @@ private:
 	PangoCairoFontMap* pfm;
 	PangoContext* pc;
 	int norm_size;
+	int X_glyph;								// index of 'X' glyph in font
+	int X_glyph_a[MAX_ALT];						// index of 'X' glyph for alternate fonts
 
 public:
 	GLCairoSurface(int width, int height);
@@ -51,8 +53,8 @@ public:
 
 	void color(int r, int g, int b);
 
-	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps);
-	bool setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps);
+	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps, int X);
+	bool setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps, int X);
 	bool setfontsize(int size);
 	bool setaa(bool mode);
 	bool writetext(const string& text, int x, int y, int align);

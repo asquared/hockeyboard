@@ -64,9 +64,11 @@ RosterList::RosterList(const string& filename) {
 
 RosterList::~RosterList() {
 	for (mapsr::iterator i = teams->begin(); i != teams->end(); ++i) {
-		delete i->second;
+		if (i->second) delete i->second;
+		i->second = 0;
 	}
-	delete teams;
+	if (teams) delete teams;
+	teams = 0;
 }
 
 Roster* RosterList::get_roster(const string& team) {

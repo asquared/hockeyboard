@@ -13,6 +13,7 @@ void GLCairoSurface::common_constructor() {
 	pango_cairo_update_context(ct, pc);
 	cairo_font_options_destroy(cfo);
 	norm_size = 0;
+	X_glyph = -1;
 }
 
 GLCairoSurface::GLCairoSurface(int width, int height) {
@@ -117,7 +118,7 @@ void GLCairoSurface::color(int r, int g, int b) {
 	cairo_set_source_rgb(ct, fr/255.0, fg/255.0, fb/255.0);
 }
 
-bool GLCairoSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps, int X) {
 	pango_font_description_set_family(pfd, face.c_str());
 	if (bold) pango_font_description_set_weight(pfd, PANGO_WEIGHT_BOLD);
 	else pango_font_description_set_weight(pfd, PANGO_WEIGHT_NORMAL);
@@ -125,10 +126,11 @@ bool GLCairoSurface::setfontface(const string& face, bool bold, bool italic, boo
 	else pango_font_description_set_style(pfd, PANGO_STYLE_NORMAL);
 	if (smallcaps) pango_font_description_set_variant(pfd, PANGO_VARIANT_SMALL_CAPS);
 	else pango_font_description_set_variant(pfd, PANGO_VARIANT_NORMAL);
+	X_glyph = X;
 	return true;
 }
 
-bool GLCairoSurface::setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoSurface::setfontfacealt(unsigned int index, const string& face, bool bold, bool italic, bool smallcaps, int X) {
 	if (index < 0 || index > MAX_ALT) return false;
 	if (!pfda[index]) pfda[index] = pango_font_description_new();
 	pango_font_description_set_family(pfda[index], face.c_str());
@@ -138,6 +140,7 @@ bool GLCairoSurface::setfontfacealt(unsigned int index, const string& face, bool
 	else pango_font_description_set_style(pfda[index], PANGO_STYLE_NORMAL);
 	if (smallcaps) pango_font_description_set_variant(pfda[index], PANGO_VARIANT_SMALL_CAPS);
 	else pango_font_description_set_variant(pfda[index], PANGO_VARIANT_NORMAL);
+	X_glyph_a[index] = X;
 	return true;
 }
 
@@ -201,10 +204,12 @@ bool GLCairoSurface::writetextshrink(const string& text, int x, int y_c, int ali
 	pango_layout_set_font_description(pl, pfd);
 	int shrink_size = norm_size;
 	PangoFontDescription* pfdp = pfd;
+	int X_glyph_p = X_glyph;
 	unsigned int pfdi = 0;
 	while ( ( pango_layout_get_line_count(pl) > 1 ) && shrink_size > 4 ) {
 		if (pfdi < MAX_ALT && pfda[pfdi]) {
 			pfdp = pfda[pfdi];
+			X_glyph_p = X_glyph_a[pfdi];
 			++pfdi;
 			pango_font_description_set_size(pfdp, shrink_size*PANGO_SCALE);
 			pango_layout_set_font_description(pl, pfdp);
@@ -217,7 +222,7 @@ bool GLCairoSurface::writetextshrink(const string& text, int x, int y_c, int ali
 	}
 	PangoFont* pf = pango_context_load_font(pc, pfdp);
 	PangoRectangle ink_rect, log_rect;
-	pango_font_get_glyph_extents(pf, 54, &ink_rect, &log_rect);
+	pango_font_get_glyph_extents(pf, X_glyph_p, &ink_rect, &log_rect);
 	int char_asc = PANGO_ASCENT(ink_rect) / PANGO_SCALE;
 	int line_asc = PANGO_ASCENT(log_rect) / PANGO_SCALE;
 	g_object_unref(pf);

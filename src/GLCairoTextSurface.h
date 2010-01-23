@@ -26,7 +26,7 @@ public:
 
 	void color(int r, int g, int b);
 
-	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps);
+	bool setfontface(const string& face, bool bold, bool italic, bool smallcaps, int X);
 	bool setfontsize(int size);
 	bool writetext(const string& text, int x, int y, int align);
 	bool writetext(const string& text, int x, int y, int align, int maxwidth);

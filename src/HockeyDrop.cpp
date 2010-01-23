@@ -7,10 +7,10 @@ std::string gettime(short min, short sec) {
 	return std::string(c);
 }
 inline void set_font_defaults_black(GLCairoSurface* glcs, int size) {
-	glcs->setfontface("Franklin Gothic Demi Cond", false, false, false);
-	glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false);
-	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
-	//glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false);
+	//glcs->setfontface("Franklin Gothic Demi Cond", false, false, false, 54);
+	//glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false, 54);
+	glcs->setfontface("Gotham Narrow Bold", false, false, false, 25);
+	glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false, 25);
 	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
 	//glcs->setfontfacealt(0, "DIN Next LT Pro Bold Condensed", false, false, false);
 	glcs->setfontsize(size);
@@ -19,23 +19,24 @@ inline void set_font_defaults_black(GLCairoSurface* glcs, int size) {
 
 void HockeyDrop::load_graphics() {
 	try {
-		base_y = new GLCairoSurface("hb_yellow.png");
-		base_w = new GLCairoSurface("hb_white.png");
-		pp_y = new GLCairoSurface("hb_pp_yellow.png");
-		pp_w = new GLCairoSurface("hb_pp_white.png");
+		base_y = new GLCairoSurface("hb3_yellow.png");
+		base_w = new GLCairoSurface("hb3_white.png");
+		pp_y = new GLCairoSurface("hb3_pp_yellow.png");
+		pp_w = new GLCairoSurface("hb3_pp_white.png");
 	}
 	catch (int) {
 		std::cout << "Error: PNG file not found or read error\n";
 	}
-	text = new GLCairoTextSurface(335, 44);
-	set_font_defaults_black(text, 30);
-	strength = new GLCairoTextSurface(220, 44);
-	set_font_defaults_black(strength, 30);	
-	pptime = new GLCairoTextSurface(123, 44);
-	set_font_defaults_black(pptime, 36);
-	compf = new GLCairoSurface(335, 44);
-	compb = new GLCairoSurface(335, 44);
-	comp = new GLCairoSurface(335, 44);
+	text = new GLCairoTextSurface(347, 36);
+	set_font_defaults_black(text, 28);
+	strength = new GLCairoTextSurface(248, 32);
+	set_font_defaults_black(strength, 28);	
+	pptime = new GLCairoTextSurface(112, 36);
+	set_font_defaults_black(pptime, 32);
+	pptime->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
+	compf = new GLCairoSurface(355, 40);
+	compb = new GLCairoSurface(355, 40);
+	comp = new GLCairoSurface(355, 40);
 }
 
 void HockeyDrop::set_lines() {
@@ -167,26 +168,26 @@ float HockeyDrop::display(GLCairoSurface* main) {
 	switch (state) {
 		case SI_PP:
 		case SI_PP_EN:
-			// power play (54, + EMPTY NET (55))
+			// power play (+ EMPTY NET)
 			if (ppstate >= 1) {
-				pp_y->painton(compf, 1, 0, 1.0);
+				pp_y->painton(compf, 0, 0, 1.0);
 			}
 			else if (ppstate == -1) {
 				base_w->painton(compf, 0, 0, 1.0);
 			}
 			else { 
-				pp_w->painton(compf, 1, 0, 1.0);
+				pp_w->painton(compf, 0, 0, 1.0);
 			}
 			if (ppstate >= 0) {
 				//strength->writetext(lines[SI_PP], 14, -3, 0);
-				strength->writetextshrink(lines[state], 14, 22, 0, 194);
-				pptime->writetext(gettime(min, sec), 94, -8, 2);
-				strength->painton(compf, 4, 0, 1.0);
-				pptime->painton(compf, 220, 0, 1.0);
+				strength->writetextshrink(lines[state], 14, 16, 0, 226);
+				pptime->writetext(gettime(min, sec), 97, -9, 2);
+				strength->painton(compf, 5, 4, 1.0);
+				pptime->painton(compf, 239, 2, 1.0);
 			}
 			else {
-				text->writetextshrink(lines[state], 167, 22, 1, 295);
-				text->painton(compf, 0, 0, 1.0);
+				text->writetextshrink(lines[state], 173, 18, 1, 322);
+				text->painton(compf, 4, 2, 1.0);
 			}
 			break;
 		case SI_EN_V:
@@ -194,27 +195,27 @@ float HockeyDrop::display(GLCairoSurface* main) {
 		case SI_PS_V:
 		case SI_PS_H:
 		case SI_DP:
-			// yellow lines (EMPTY NET (48-49), PENALTY SHOT (50-51), DELAYED PENALTY (56))
+			// yellow lines (EMPTY NET, PENALTY SHOT, DELAYED PENALTY)
 			base_y->painton(compf, 0, 0, 1.0);
-			text->writetextshrink(lines[state], 167, 22, 1, 295);
-			text->painton(compf, 0, 0, 1.0);
+			text->writetextshrink(lines[state], 173, 18, 1, 322);
+			text->painton(compf, 4, 2, 1.0);
 			break;
 		case SI_TO_V:
 		case SI_TO_H:
-			// white lines (TIMEOUT (52-53))
+			// white lines (TIMEOUT)
 			base_w->painton(compf, 0, 0, 1.0);
-			text->writetextshrink(lines[state], 167, 22, 1, 295);
-			text->painton(compf, 0, 0, 1.0);
+			text->writetextshrink(lines[state], 173, 18, 1, 322);
+			text->painton(compf, 4, 2, 1.0);
 			break;
 		case -1:
 			// do nothing
 			break;
 		default:
-			// white lines (custom (0-47))
+			// white lines (custom)
 			if (state >= 0 && state <= MAX_USER_STATE) {
 				base_w->painton(compf, 0, 0, 1.0);
-				text->writetextshrink(lines[state], 167, 22, 1, 295);
-				text->painton(compf, 0, 0, 1.0);
+				text->writetextshrink(lines[state], 173, 18, 1, 322);
+				text->painton(compf, 4, 2, 1.0);
 			}
 			else {
 				state = -1;

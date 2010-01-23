@@ -204,7 +204,7 @@ int main( int argc, char* argv[] ) {
 	data = new HockeyData;
 	logic = new HockeyLogic;
 	kbuf = new Keybuffer;
-	drop = new HockeyDrop(424, 10);
+	drop = new HockeyDrop(421, 12);
 
 	/* // framerate clock
 	clk = new Mclock();

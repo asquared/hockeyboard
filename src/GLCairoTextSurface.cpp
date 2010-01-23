@@ -20,9 +20,9 @@ void GLCairoTextSurface::color(int r, int g, int b) {
 	}
 }
 
-bool GLCairoTextSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps) {
+bool GLCairoTextSurface::setfontface(const string& face, bool bold, bool italic, bool smallcaps, int X) {
 	format_change = true;
-	return GLCairoSurface::setfontface(face, bold, italic, smallcaps);
+	return GLCairoSurface::setfontface(face, bold, italic, smallcaps, X);
 }
 
 bool GLCairoTextSurface::setfontsize(int size) {

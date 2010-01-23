@@ -1,18 +1,18 @@
 #include "HockeyDraw.h"
 
 inline void set_font_defaults(GLCairoSurface* glcs, int size) {
-	glcs->setfontface("Franklin Gothic Demi Cond", false, false, false);
-	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
+	//glcs->setfontface("Franklin Gothic Demi Cond", false, false, false, 54);
+	glcs->setfontface("Gotham Narrow Bold", false, false, false, 25);
 	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
 	glcs->setfontsize(size);
 	glcs->color(240,240,240);
 }
 
 inline void set_font_alternate(GLCairoSurface* glcs, int size) {
-	glcs->setfontface("Franklin Gothic Demi Cond", false, false, false);
-	glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false);
-	//glcs->setfontface("Gotham Narrow Bold", false, false, false);
-	//glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false);
+	//glcs->setfontface("Franklin Gothic Demi Cond", false, false, false, 54);
+	//glcs->setfontfacealt(0, "Franklin Gothic Demi Comp", false, false, false, 54);
+	glcs->setfontface("Gotham Narrow Bold", false, false, false, 25);
+	glcs->setfontfacealt(0, "Gotham XNarrow Bold", false, false, false, 25);
 	//glcs->setfontface("DIN Next LT Pro Bold", false, false, false);
 	//glcs->setfontfacealt(0, "DIN Next LT Pro Bold Condensed", false, false, false);
 	glcs->setfontsize(size);
@@ -29,44 +29,44 @@ void HockeyDraw::init_surfaces() {
 	GLCairoSurface* team = 0, * clockper = 0;
 
 
-	score[0] = new GLCairoTextSurface(82, 40);
-	score[1] = new GLCairoTextSurface(82, 40);
-	name[0] = new GLCairoTextSurface(111, 34);
-	name[1] = new GLCairoTextSurface(111, 34);
-	dark_name[0] = new GLCairoTextSurface(111, 34);
-	dark_name[1] = new GLCairoTextSurface(111, 34);
-	clock = new GLCairoTextSurface(150, 40);
-	period = new GLCairoTextSurface(75, 40);
+	score[0] = new GLCairoTextSurface(77, 36);
+	score[1] = new GLCairoTextSurface(77, 36);
+	name[0] = new GLCairoTextSurface(114, 32);
+	name[1] = new GLCairoTextSurface(114, 32);
+	dark_name[0] = new GLCairoTextSurface(114, 32);
+	dark_name[1] = new GLCairoTextSurface(114, 32);
+	clock = new GLCairoTextSurface(133, 36);
+	period = new GLCairoTextSurface(62, 36);
 	main = new GLCairoSurface(1024, 64);
-	ync[0] = new GLCairoSurface(117, 38);
-	ync[1] = new GLCairoSurface(117, 38);
+	ync[0] = new GLCairoSurface(114, 32);
+	ync[1] = new GLCairoSurface(114, 32);
 
 	try {
-		bg = new GLCairoSurface("hb_background.png");
-		team = new GLCairoSurface("hb_team.png");
-		clockper = new GLCairoSurface("hb_clock.png");
-		redscore = new GLCairoSurface("hb_redscore.png");
-		yellowname = new GLCairoSurface("hb_yellowteam.png");
-		team_mask = new GLCairoSurface("team_mask.png");
-		team_gloss = new GLCairoSurface("team_gloss.png");
+		bg = new GLCairoSurface("hb3_background.png");
+		team = new GLCairoSurface("hb3_team.png");
+		clockper = new GLCairoSurface("hb3_clock.png");
+		redscore = new GLCairoSurface("hb3_redscore.png");
+		yellowname = new GLCairoSurface("hb3_yellowteam.png");
+		team_mask = new GLCairoSurface("hb3_teammask.png");
+		team_gloss = new GLCairoSurface("hb3_teamgloss.png");
 	}
 	catch (int) {
 		std::cout << "Error: PNG file not found or read error\n";
 	}
 
-	team->painton(bg, 71, 10, 1.0);
-	team->painton(bg, 248, 10, 1.0);
-	clockper->painton(bg, 751, 10, 1.0);
+	team->painton(bg, 70, 12, 1.0);
+	team->painton(bg, 246, 12, 1.0);
+	clockper->painton(bg, 766, 12, 1.0);
 
-	set_font_defaults(clock, 36);
-	//clock->setfontface("Gotham Narrow Bold FWN", false, false, false);
-	set_font_defaults(period, 36);
-	set_font_defaults(score[0], 36);
-	set_font_defaults(score[1], 36);
-	set_font_alternate(name[0], 30);
-	set_font_alternate(name[1], 30);
-	set_font_alternate(dark_name[0], 30);
-	set_font_alternate(dark_name[1], 30);
+	set_font_alternate(clock, 32);
+	clock->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
+	set_font_defaults(period, 32);
+	set_font_defaults(score[0], 32);
+	set_font_defaults(score[1], 32);
+	set_font_alternate(name[0], 28);
+	set_font_alternate(name[1], 28);
+	set_font_alternate(dark_name[0], 28);
+	set_font_alternate(dark_name[1], 28);
 	dark_name[0]->color(19,19,19);
 	dark_name[1]->color(19,19,19);
 
@@ -95,40 +95,40 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 
 	// red flash
 	if (data->getRedFlash()) {
-		redscore->painton(main, 167+177*(data->red_flash_team), 10, 1.0);
+		redscore->painton(main, 170+176*(data->red_flash_team), 12, 1.0);
 	}
 
 	for (int i = 0; i < 2; ++i) {
-		score[i]->writetext(int2str(data->tm[i].sc), 41, -10, 1);
-		//name[i]->writetext(data->name[i], 55, -8, 1);
-		name[i]->writetextshrink(data->tm[i].name, 55, 17, 1, 82);
-		bool name_changed = dark_name[i]->writetextshrink(data->tm[i].name, 55, 17, 1, 82);
-		score[i]->painton(main, 170+177*i, 12, 1.0);
-		name[i]->painton(main, 74+177*i, 15, 1.0);
+		score[i]->writetext(int2str(data->tm[i].sc), 39, -9, 1);
+		//name[i]->writetext(data->name[i], 57, -5, 1);
+		name[i]->writetextshrink(data->tm[i].name, 57, 16, 1, 86);
+		bool name_changed = dark_name[i]->writetextshrink(data->tm[i].name, 57, 17, 1, 86);
+		score[i]->painton(main, 174+176*i, 14, 1.0);
+		name[i]->painton(main, 74+176*i, 16, 1.0);
 
 		if (name_changed) {
 			ync[i]->clear();
 			yellowname->painton(ync[i], 0, 0, 1.0);
-			dark_name[i]->painton(ync[i], 3, 2, 1.0);
+			dark_name[i]->painton(ync[i], 0, -1, 1.0);
 		}
 	}
 
 	if (data->active_clock == &(data->int_clock)) {
-		clock->writetext(getclock(min,sec,tenths), 75, -10, 1);
+		clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
 		period->clear();
 	}
 	else if (data->period == 127) {
-		clock->writetext(string("FINAL"), 75, -10, 1);
+		clock->writetextshrink(string("FINAL"), 66, 18, 1, 110);
 		period->clear();
 	}
 	else {
-		clock->writetext(getclock(min,sec,tenths), 75, -10, 1);
-		period->writetextshrink(data->getStringPeriod(), 37, 20, 1, 45);
+		clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
+		period->writetextshrink(data->getStringPeriod(), 31, 18, 1, 35);
 	}
 
 
-	clock->painton(main, 751, 12, 1.0);
-	period->painton(main, 879, 12, 1.0);
+	clock->painton(main, 770, 14, 1.0);
+	period->painton(main, 888, 14, 1.0);
 
 	drop->display(main);
 	
@@ -136,17 +136,17 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	float y[2];
 	drop->getyellow(y);
 	if (data->yellow_v) user_yellow = 1.0f;
-	if (data->yellow_v || y[0] > 0) ync[0]->painton(main, 71, 13, max(user_yellow, y[0]));
+	if (data->yellow_v || y[0] > 0) ync[0]->painton(main, 74, 16, max(user_yellow, y[0]));
 	if (data->yellow_h) user_yellow = 1.0f;
-	if (data->yellow_h || y[1] > 0) ync[1]->painton(main, 248, 13, max(user_yellow, y[1]));
+	if (data->yellow_h || y[1] > 0) ync[1]->painton(main, 250, 16, max(user_yellow, y[1]));
 
 	main->paintgl(0.0f, 736.0f + (float) offset);
 }
 
 void HockeyDraw::update_team_color(int team, int r, int g, int b) {
 	team_mask->fill_match_a(r, g, b, 255);
-	team_mask->painton(bg, 74+177*team, 15, 1.0);
-	team_gloss->painton(bg, 74+177*team, 15, 1.0);
+	team_mask->painton(bg, 74+176*team, 16, 1.0);
+	team_gloss->painton(bg, 74+176*team, 16, 1.0);
 }
 
 bool drawRect(int xl, int xh, int yl, int yh, int z) {
