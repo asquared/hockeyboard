@@ -23,6 +23,7 @@ void HockeyDrop::load_graphics() {
 		base_w = new GLCairoSurface("hb3_white.png");
 		pp_y = new GLCairoSurface("hb3_pp_yellow.png");
 		pp_w = new GLCairoSurface("hb3_pp_white.png");
+		stat_sog = new GLCairoSurface("hb3_stat_sog.png");
 	}
 	catch (int) {
 		std::cout << "Error: PNG file not found or read error\n";
@@ -34,6 +35,16 @@ void HockeyDrop::load_graphics() {
 	pptime = new GLCairoTextSurface(112, 36);
 	set_font_defaults_black(pptime, 32);
 	pptime->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
+
+	for (int i = 0; i <= 1; ++i) {
+		team[i] = new GLCairoTextSurface(72, 28);
+		set_font_defaults_black(team[i], 23);
+		stat[i] = new GLCairoTextSurface(48, 36);
+		stat[i]->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
+		stat[i]->setfontsize(30);
+		stat[i]->color(19,19,19);
+	}
+
 	compf = new GLCairoSurface(355, 40);
 	compb = new GLCairoSurface(355, 40);
 	comp = new GLCairoSurface(355, 40);
@@ -139,7 +150,7 @@ void HockeyDrop::settime(short min_in, short sec_in) {
 	sec = sec_in;
 }
 
-float HockeyDrop::display(GLCairoSurface* main) {
+float HockeyDrop::display(GLCairoSurface* main, HockeyData* data) {
 	int time;			// time count in msec
 	float timef;		// time count in sec
 
@@ -206,6 +217,16 @@ float HockeyDrop::display(GLCairoSurface* main) {
 			base_w->painton(compf, 0, 0, 1.0);
 			text->writetextshrink(lines[state], 173, 18, 1, 322);
 			text->painton(compf, 4, 2, 1.0);
+			break;
+		case SI_SOG:
+			base_w->painton(compf, 0, 0, 1.0);
+			stat_sog->painton(compf, 4, 2, 1.0);
+			for (int i = 0; i <= 1; ++i) {
+				team[i]->writetextshrink(data->tm[i].name, 72, 14, 2, 72);
+				stat[i]->writetextshrink(int2str(data->tm[i].sog), 24, 18, 1, 48);
+				team[i]->painton(compf, 87+124*i, 6, 1.0);
+				stat[i]->painton(compf, 161+124*i, 2, 1.0);
+			}
 			break;
 		case -1:
 			// do nothing

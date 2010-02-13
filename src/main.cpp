@@ -164,9 +164,12 @@ void make2d() {
 	glPushMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
+#ifdef _DEBUG
 	//glOrtho(0.0f, 1400.0f, 0.0f, 1050.0f, 0.0f, 1.0f);
-	//glOrtho(0.0f, 1280.0f, 0.0f, 1024.0f, 0.0f, 1.0f);
+	glOrtho(0.0f, 1280.0f, 0.0f, 1024.0f, 0.0f, 1.0f);
+#else
 	glOrtho(0.0f, 1024.0f, 0.0f, 768.0f, 0.0f, 1.0f);
+#endif
 	glPopMatrix();
 	glMatrixMode(oldmode);
 }
@@ -180,9 +183,12 @@ int main( int argc, char* argv[] ) {
     // set RGBA mode with double and depth buffers
     glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
 
+#ifdef _DEBUG
 	//glutGameModeString( "1400x1050:32@60" );
-	//glutGameModeString( "1280x1024:32@60" );
+	glutGameModeString( "1280x1024:32@60" );
+#else
 	glutGameModeString( "1024x768:32@60" );
+#endif
     // start fullscreen game mode
     glutEnterGameMode();
 

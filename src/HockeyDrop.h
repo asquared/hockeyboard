@@ -3,13 +3,14 @@
 #include <string>
 //#include "GLBitmap.h"
 #include "GLCairoTextSurface.h"
+#include "HockeyData.h"
 #include "FreeType.h"
 #include "Mclock.h"
 
 using std::string;
 
 // constant for number of lines/states
-const int MAX_LINES = 59;
+const int MAX_LINES = 60;
 const int MIN_USER_STATE = 0;
 const int MAX_USER_STATE = 49;
 
@@ -23,6 +24,7 @@ const int SI_TO_H = 55;
 const int SI_PP = 56;		// POWER PLAY
 const int SI_PP_EN = 57;	// PP + EMPTY NET
 const int SI_DP = 58;		// DELAYED PENALTY
+const int SI_SOG = 59;		// SHOTS ON GOAL (stat)
 
 class HockeyDrop {
 private:
@@ -38,6 +40,8 @@ private:
 
 	GLCairoSurface* base_y, * base_w, * pp_y, * pp_w;
 	GLCairoTextSurface* text, * strength, * pptime;
+	GLCairoSurface* stat_sog;
+	GLCairoTextSurface* team[2], * stat[2];
 	GLCairoSurface* compf, * compb, * comp;
 
 public:
@@ -58,7 +62,7 @@ public:
 	char getid(unsigned char line);
 	string getstring(signed short line);
 	void settime(short min_in, short sec_in);
-	float display(GLCairoSurface* main);
+	float display(GLCairoSurface* main, HockeyData* data);
 	void ppdata( short adv, unsigned short strength, unsigned short pmin, unsigned short psec);
 	signed char getyellow();
 	void getyellow(float y[2]);

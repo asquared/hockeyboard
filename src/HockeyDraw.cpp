@@ -130,7 +130,7 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	clock->painton(main, 770, 14, 1.0);
 	period->painton(main, 888, 14, 1.0);
 
-	drop->display(main);
+	drop->display(main, data);
 	
 	float user_yellow = 0.0f;
 	float y[2];

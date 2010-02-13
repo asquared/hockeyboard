@@ -125,7 +125,10 @@ void specialkey( int key, int x, int y ) {
 	}
 	else if (key == GLUT_KEY_F5) drop->toggle(SI_TO_V);
 	else if (key == GLUT_KEY_F6) drop->toggle(SI_TO_H);
-	else if (key == GLUT_KEY_F7) drop->drop(drop->user_state);
+	else if (key == GLUT_KEY_F7) {
+		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(SI_SOG);
+		else drop->drop(drop->user_state);
+	}
 	else if (key == GLUT_KEY_F8) drop->raise();
 
 	// score and yellow highlight controls
