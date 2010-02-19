@@ -135,7 +135,7 @@ void load_settings(const char* filename) {
 	}
 
 	// Text section
-	for (int i = MIN_USER_STATE; i <= MAX_USER_STATE; ++i) {
+	for (int i = MIN_USER_STATE; i <= MAX_WRITE_STATE; ++i) {
 		if (ip.get("Text", IniParser::to_str(i), in)) {
 			drop->setstring(i, in);
 		}

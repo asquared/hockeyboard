@@ -1100,7 +1100,7 @@ void HockeyLogic::logicText(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 	switch (minor) {
 		case 0:
 			clearStrings(0,43);
-			disp[42] = "Enter number of text slot (0-47):";
+			disp[42] = "Enter number of text slot (0-57):";
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -1108,7 +1108,7 @@ void HockeyLogic::logicText(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
 				inb[0] = str2int(kbuf->fullbuf(), -1);
-				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_USER_STATE) {
+				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_WRITE_STATE) {
 					disp[42] = "Enter text string for slot " + kbuf->fullbuf() + ":";
 					minor = 2;
 				}
@@ -1132,7 +1132,7 @@ void HockeyLogic::logicStat(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 	switch (minor) {
 		case 0:
 			clearStrings(0,43);
-			disp[42] = "Enter number of text slot (0-47):";
+			disp[42] = "Enter number of text slot (0-57):";
 			minor = 1;
 			kbuf->clear();
 			break;
@@ -1140,7 +1140,7 @@ void HockeyLogic::logicStat(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[43] = kbuf->fullbuf();
 			if ( kbuf->enter() ) {
 				inb[0] = str2int(kbuf->fullbuf(), -1);
-				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_USER_STATE) {
+				if (inb[0] >= MIN_USER_STATE && inb[0] <= MAX_WRITE_STATE) {
 					disp[42] = "Enter statistics values for teams (Format: V H):";
 					minor = 2;
 				}

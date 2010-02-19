@@ -31,14 +31,18 @@ void keyboard( unsigned char key, int x, int y ) {
 	//	drop->raise();
 	//}
 	// Alt-[0-9]
-	if (mod == GLUT_ACTIVE_ALT && key >= '0' && key <= '9') {
-		drop->user_state = jumpstate[key-'0'];
+	if (mod == GLUT_ACTIVE_ALT) {
+		if (key >= '0' && key <= '9') drop->user_state = jumpstate[key-'0'];
+		else if (key == '-') drop->user_state = 50;
+		else if (key == '=') drop->user_state = SI_SOG;
 	}
 	// Spacebar and numbers (outside of prompts)
 	else if (logic->isClear()) {
 		if (key == 32) data->active_clock->toggle();
-		else if (key >= '0' && key <= '9') drop->user_state = jumpstate[key-'0'];
 		else if (key == 'y') data->sync = !(data->sync);
+		else if (key >= '0' && key <= '9') drop->user_state = jumpstate[key-'0'];
+		else if (key == '-') drop->user_state = 50;
+		else if (key == '=') drop->user_state = SI_SOG;
 		else if (key == '<') data->yellow_v = !(data->yellow_v);
 		else if (key == '>') data->yellow_h = !(data->yellow_h);
 		else if (key == 'q') {
@@ -126,8 +130,7 @@ void specialkey( int key, int x, int y ) {
 	else if (key == GLUT_KEY_F5) drop->toggle(SI_TO_V);
 	else if (key == GLUT_KEY_F6) drop->toggle(SI_TO_H);
 	else if (key == GLUT_KEY_F7) {
-		if (mod == GLUT_ACTIVE_SHIFT) drop->toggle(SI_SOG);
-		else drop->drop(drop->user_state);
+		drop->drop(drop->user_state);
 	}
 	else if (key == GLUT_KEY_F8) drop->raise();
 

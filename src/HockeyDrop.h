@@ -10,26 +10,27 @@
 using std::string;
 
 // constant for number of lines/states
-const int MAX_LINES = 60;
+const int MAX_LINES = 69;
 const int MIN_USER_STATE = 0;
-const int MAX_USER_STATE = 49;
+const int MAX_USER_STATE = 59;
+const int MAX_WRITE_STATE = 57;
 
 // constants for special states
-const int SI_EN_V = 50;		// EMPTY NET
-const int SI_EN_H = 51;
-const int SI_PS_V = 52;		// PENALTY SHOT
-const int SI_PS_H = 53;
-const int SI_TO_V = 54;		// TIMEOUT
-const int SI_TO_H = 55;
-const int SI_PP = 56;		// POWER PLAY
-const int SI_PP_EN = 57;	// PP + EMPTY NET
-const int SI_DP = 58;		// DELAYED PENALTY
+const int SI_EN_V = 60;		// EMPTY NET
+const int SI_EN_H = 61;
+const int SI_PS_V = 62;		// PENALTY SHOT
+const int SI_PS_H = 63;
+const int SI_TO_V = 64;		// TIMEOUT
+const int SI_TO_H = 65;
+const int SI_PP = 66;		// POWER PLAY
+const int SI_PP_EN = 67;	// PP + EMPTY NET
+const int SI_DP = 68;		// DELAYED PENALTY
 const int SI_SOG = 59;		// SHOTS ON GOAL (stat)
 
 class HockeyDrop {
 private:
-	void set_lines();
 	void load_graphics();
+	void common_constructor();
 
 	string lines[MAX_LINES];	// text for each state
 	short min, sec;				// power play clock
@@ -38,10 +39,10 @@ private:
 	Mclock droptime;			// fade timer
 	bool moving;				// is element currently fading?
 
-	GLCairoSurface* base_y, * base_w, * pp_y, * pp_w;
-	GLCairoTextSurface* text, * strength, * pptime;
+	GLCairoSurface* base_y, * base_w, * base_r, * pp_y, * pp_w;
+	GLCairoTextSurface* text, * text_w, * strength, * pptime;
 	GLCairoSurface* stat_sog;
-	GLCairoTextSurface* team[2], * stat[2];
+	GLCairoTextSurface* team[2], * val[2];
 	GLCairoSurface* compf, * compb, * comp;
 
 public:

@@ -21,6 +21,7 @@ void HockeyDrop::load_graphics() {
 	try {
 		base_y = new GLCairoSurface("hb3_yellow.png");
 		base_w = new GLCairoSurface("hb3_white.png");
+		base_r = new GLCairoSurface("hb3_red.png");
 		pp_y = new GLCairoSurface("hb3_pp_yellow.png");
 		pp_w = new GLCairoSurface("hb3_pp_white.png");
 		stat_sog = new GLCairoSurface("hb3_stat_sog.png");
@@ -29,7 +30,10 @@ void HockeyDrop::load_graphics() {
 		std::cout << "Error: PNG file not found or read error\n";
 	}
 	text = new GLCairoTextSurface(347, 36);
+	text_w = new GLCairoTextSurface(347, 36);
 	set_font_defaults_black(text, 28);
+	set_font_defaults_black(text_w, 28);
+	text_w->color(240,240,240);
 	strength = new GLCairoTextSurface(248, 32);
 	set_font_defaults_black(strength, 28);	
 	pptime = new GLCairoTextSurface(112, 36);
@@ -39,10 +43,10 @@ void HockeyDrop::load_graphics() {
 	for (int i = 0; i <= 1; ++i) {
 		team[i] = new GLCairoTextSurface(72, 28);
 		set_font_defaults_black(team[i], 23);
-		stat[i] = new GLCairoTextSurface(48, 36);
-		stat[i]->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
-		stat[i]->setfontsize(30);
-		stat[i]->color(19,19,19);
+		val[i] = new GLCairoTextSurface(48, 36);
+		val[i]->setfontface("Gotham FWN Narrow Bold", false, false, false, 25);
+		val[i]->setfontsize(30);
+		val[i]->color(19,19,19);
 	}
 
 	compf = new GLCairoSurface(355, 40);
@@ -50,34 +54,36 @@ void HockeyDrop::load_graphics() {
 	comp = new GLCairoSurface(355, 40);
 }
 
-void HockeyDrop::set_lines() {
-	lines[SI_DP] = string("DELAYED PENALTY");
-	lines[SI_EN_V] = lines[SI_EN_H] = string("EMPTY NET");
-	lines[SI_PS_V] = lines[SI_PS_H] = string("PENALTY SHOT");
-	lines[SI_TO_V] = lines[SI_TO_H] = string("TIMEOUT");
-}
-
-HockeyDrop::HockeyDrop() {
-	x = y = 0;
+void HockeyDrop::common_constructor() {
 	old_yellow = -1;
 	user_state = MIN_USER_STATE;
 	state = -1;
 	ppstate = 0;
 	moving = false;
+	base_w = base_y = base_r = pp_y = pp_w = 0;
+	text = text_w = strength = pptime = 0;
+	stat_sog = 0;
+	team[0] = team[1] = 0;
+	val[0] = val[1] = 0;
+	compf = compb = comp = 0;
 	load_graphics();
-	set_lines();
+
+	lines[SI_DP] = string("DELAYED PENALTY");
+	lines[SI_EN_V] = lines[SI_EN_H] = string("EMPTY NET");
+	lines[SI_PS_V] = lines[SI_PS_H] = string("PENALTY SHOT");
+	lines[SI_TO_V] = lines[SI_TO_H] = string("TIMEOUT");
+	lines[SI_SOG] = string("<SHOTS ON GOAL>");
+}
+
+HockeyDrop::HockeyDrop() {
+	x = y = 0;
+	common_constructor();
 }
 
 HockeyDrop::HockeyDrop(int xin, int yin) {
 	x = xin;
 	y = yin;
-	old_yellow = -1;
-	user_state = MIN_USER_STATE;
-	state = -1;
-	ppstate = 0;
-	moving = false;
-	load_graphics();
-	set_lines();
+	common_constructor();
 }
 
 HockeyDrop::~HockeyDrop() {
@@ -85,6 +91,11 @@ HockeyDrop::~HockeyDrop() {
 	if (base_w) delete base_w;
 	if (pp_y) delete pp_y;
 	if (pp_w) delete pp_w;
+	if (stat_sog) delete stat_sog;
+	if (team[0]) delete team[0];
+	if (team[1]) delete team[1];
+	if (val[0]) delete val[0];
+	if (val[1]) delete val[1];
 	if (text) delete text;
 	if (strength) delete strength;
 	if (pptime) delete pptime;
@@ -142,6 +153,9 @@ char HockeyDrop::getid(unsigned char line) {
 	if (line < 30) return ' ';
     else if (line <= 41) return 'P';
 	else if (line <= 49) return 'G';
+	else if (line <= 53) return 'Y';
+	else if (line <= 57) return 'R';
+	else if (line <= 59) return '*';
 	else return ' ';
 }
 
@@ -223,9 +237,9 @@ float HockeyDrop::display(GLCairoSurface* main, HockeyData* data) {
 			stat_sog->painton(compf, 4, 2, 1.0);
 			for (int i = 0; i <= 1; ++i) {
 				team[i]->writetextshrink(data->tm[i].name, 72, 14, 2, 72);
-				stat[i]->writetextshrink(int2str(data->tm[i].sog), 24, 18, 1, 48);
+				val[i]->writetextshrink(int2str(data->tm[i].sog), 24, 18, 1, 48);
 				team[i]->painton(compf, 87+124*i, 6, 1.0);
-				stat[i]->painton(compf, 161+124*i, 2, 1.0);
+				val[i]->painton(compf, 161+124*i, 2, 1.0);
 			}
 			break;
 		case -1:
@@ -233,10 +247,20 @@ float HockeyDrop::display(GLCairoSurface* main, HockeyData* data) {
 			break;
 		default:
 			// white lines (custom)
-			if (state >= 0 && state <= MAX_USER_STATE) {
+			if (state >= 0 && state <= 49) {
 				base_w->painton(compf, 0, 0, 1.0);
 				text->writetextshrink(lines[state], 173, 18, 1, 322);
 				text->painton(compf, 4, 2, 1.0);
+			}
+			else if (state >= 50 && state <= 53) {
+				base_y->painton(compf, 0, 0, 1.0);
+				text->writetextshrink(lines[state], 173, 18, 1, 322);
+				text->painton(compf, 4, 2, 1.0);
+			}
+			else if (state >= 54 && state <= 57) {
+				base_r->painton(compf, 0, 0, 1.0);
+				text_w->writetextshrink(lines[state], 173, 18, 1, 322);
+				text_w->painton(compf, 4, 2, 1.0);
 			}
 			else {
 				state = -1;

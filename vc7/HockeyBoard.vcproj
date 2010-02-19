@@ -85,7 +85,7 @@
 				Name="VCLinkerTool"
 				ShowProgress="0"
 				OutputFile="$(OutDir)/HockeyBoard.exe"
-				Version="2.4.0"
+				Version="3.0.2"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\cairo_new\lib"
 				IgnoreAllDefaultLibraries="FALSE"
