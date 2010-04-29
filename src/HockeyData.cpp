@@ -221,7 +221,8 @@ void HockeyData::do_sync_tr() {
 		if (serialdata.size() > 0) {
 			for (unsigned int i = 0; i < serialdata.size(); ++i) {
 				c = serialdata[i];
-				c ^= 0x2b;
+				if (c == 0xff) c = c_last;
+				else c ^= 0x2b;
 				c &= 0x0f;		// no error checking yet
 				if (sync_ignore_count > 0) {
 					--sync_ignore_count;

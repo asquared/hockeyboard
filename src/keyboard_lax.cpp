@@ -74,7 +74,10 @@ void keyboard( unsigned char key, int x, int y ) {
 	// Spacebar and numbers (outside of prompts)
 	if (logic->isClear()) {
 		if (key == 32) data->active_clock->toggle();
-		else if (key == 'y') data->sync = !(data->sync);
+		else if (key == 'y') {
+			data->sync_ignore_count = 2;
+			data->sync = !(data->sync);
+		}
 		else if (key >= '0' && key <= '9') drop->user_state = jumpstate[key-'0'];
 		else if (key == '-') drop->user_state = 50;
 		else if (key == '=') drop->user_state = SI_SOG;
