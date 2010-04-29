@@ -1191,8 +1191,11 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[1] = "S: Scan for port";
 			disp[2] = "";
 			disp[3] = "D: Set transition delays";
-			clearStrings(4,41);
+			disp[4] = "";
+			disp[5] = "M: Switch sync mode";
+			clearStrings(6,41);
 			disp[17] = int2str(data->start_delay) + "/" + int2str(data->stop_delay);
+			disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
 			port = data->ssync.get_port();
 			if (port == 0) disp[10] = "Currently using port: NONE";
 			else disp[10] = "Currently using port: COM" + int2str(port);
@@ -1220,6 +1223,10 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				clearStrings(0,41);
 				disp[42] = "Enter stop->start (on->off) delay in milliseconds:";
 				minor = 30;
+			}
+			else if (key == 'm') {
+				data->sync_tr = !data->sync_tr;
+				disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
 			}
 			kbuf->clear();
 			break;

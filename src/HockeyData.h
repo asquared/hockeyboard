@@ -111,8 +111,13 @@ public:
 	SerialSync ssync;
 	char sstat;
 	bool sync;
+	bool sync_tr;
 	int start_delay;
 	int stop_delay;
+
+	// new transition-based sync stuff
+	int sync_ignore_count;
+	unsigned char c_last;
 	
 	bool allow_quit;
 
@@ -143,6 +148,7 @@ public:
 	void stopRedFlash(unsigned char team);
 	void setppyellow();
 	void do_sync();
+	void do_sync_tr();
 
 	void draw_if(freetype::font_data* base);
 

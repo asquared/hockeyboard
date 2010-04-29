@@ -53,9 +53,12 @@ HockeyData::HockeyData() {
 	yellow_h = false;
 	keymode = 'l';
 	sync = false;
+	sync_tr = false;
 	sstat = ' ';
 	start_delay = 0;
 	stop_delay = 0;
+	sync_ignore_count = 2;
+	c_last = 0xff;
 	allow_quit = false;
 
 	roster_file = " ";
@@ -206,9 +209,54 @@ void HockeyData::do_sync() {
 	}
 }
 
+void HockeyData::do_sync_tr() {
+	if (!ssync.get_port()) {
+		sstat = ' ';
+		return;
+	}
+	string serialdata;
+	unsigned char c;
+	if (sync) {
+		ssync.read_all(serialdata);
+		if (serialdata.size() > 0) {
+			for (unsigned int i = 0; i < serialdata.size(); ++i) {
+				c = serialdata[i];
+				c ^= 0x2b;
+				c &= 0x0f;		// no error checking yet
+				if (sync_ignore_count > 0) {
+					--sync_ignore_count;
+					sstat = 'L';
+				}
+				else if (c == c_last) {
+					sstat = 'N';
+				}
+				else {
+					if (clock.read() > 60900) {
+						clock.adjust(-1000);
+						sync_ignore_count = 120;
+					}
+					else {
+						clock.adjust(-100);
+						sync_ignore_count = 12;
+					}
+					sstat = 'T';
+				}
+				c_last = c;
+			}
+		}
+		else {
+			sstat = ' ';
+		}
+	}
+	else {
+		ssync.read_all(serialdata);
+	}
+}
+
 void HockeyData::draw_if(freetype::font_data* base) {
 	// synchronizer
-	do_sync();
+	if (!sync_tr) do_sync();
+	else do_sync_tr();
 
 	// clock stuff
 	clock.update();
