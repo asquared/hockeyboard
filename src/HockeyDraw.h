@@ -7,15 +7,6 @@
 #include "HockeyData.h"
 #include "HockeyDrop.h"
 
-inline void get_clock_parts(Mclock& clk, int& min, int& sec, int& tenths) {
-	int ms = clk.read();
-	if ( ms % 100 == 0 ) tenths = ms / 100;
-	else tenths = (ms + 100) / 100;
-	min = tenths / (60 * 10);
-	sec = (tenths / 10) % 60;
-	tenths %= 10;
-}
-
 class HockeyDraw {
 public:
 	int offset;			// shift of bar from initial position in y

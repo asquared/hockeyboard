@@ -1,3 +1,4 @@
+#ifndef LAX
 #include "main.h"
 
 // jump to state using Alt-number
@@ -37,7 +38,7 @@ void keyboard( unsigned char key, int x, int y ) {
 		else if (key == '=') drop->user_state = SI_SOG;
 	}
 	// Spacebar and numbers (outside of prompts)
-	else if (logic->isClear()) {
+	if (logic->isClear()) {
 		if (key == 32) data->active_clock->toggle();
 		else if (key == 'y') data->sync = !(data->sync);
 		else if (key >= '0' && key <= '9') drop->user_state = jumpstate[key-'0'];
@@ -153,3 +154,4 @@ void specialkey( int key, int x, int y ) {
 	}
 
 }
+#endif

@@ -28,9 +28,15 @@ HockeyData::HockeyData() {
 	tm[0].sc = tm[1].sc = 0;
 	tm[0].sog = tm[1].sog = 0;
 	period = 1;
+#ifdef LAX
+	perlen = 15 * 60 * 1000;
+	intlen = 10 * 60 * 1000;
+	otlen = 4 * 60 * 1000;
+#else
 	perlen = 20 * 60 * 1000;
 	intlen = 12 * 60 * 1000;
 	otlen = 5 * 60 * 1000;
+#endif
 	clock.setmode(Mclock::DOWN);
 	clock.set(perlen);
 	clock_last_stopped = clock.read();
@@ -61,11 +67,13 @@ HockeyData::HockeyData() {
     //cout << rl->get_string(b, 99) << rl->get_string(r, 35) << endl;
 
 	for ( int q = 0; q < 2; ++q ) {
-		pq[q].time[0] = pq[q].time[1] = 0;
-		pq[q].rem_m[0] = pq[q].rem_m[1] = 0;
-		pq[q].rem_s[0] = pq[q].rem_s[1] = 0;
+		for (int t = 0; t < ACTIVE_QUEUE; ++t) {
+			pq[q].time[t] = 0;
+			pq[q].rem_m[t] = 0;
+			pq[q].rem_s[t] = 0;
+			pq[q].qt[t] = 0;
+		}
 		for (int t = 0; t < MAX_QUEUE; ++t) pq[q].qm[t] = 0;
-		pq[q].qt[0] = pq[q].qt[1] = 0;
 	}
 	pt_low_index = 0;
 }
@@ -95,8 +103,7 @@ inline void normalize_queue(PenaltyTimer& t) {
 }
 */
 
-
-
+#ifndef LAX
 std::string HockeyData::getStringPeriod() {
 	switch (period) {
 		case 0: 
@@ -125,6 +132,7 @@ std::string HockeyData::getStringPeriod() {
 			return std::string("OT").append(perchar);
 	}
 }
+#endif
 
 bool HockeyData::getRedFlash() {
 	return (red_flash_clock.read() % FLASH_CYC >= FLASH_OFF);
@@ -196,4 +204,29 @@ void HockeyData::do_sync() {
 	else {
 		ssync.read_last(serialdata,4);
 	}
+}
+
+void HockeyData::draw_if(freetype::font_data* base) {
+	// synchronizer
+	do_sync();
+
+	// clock stuff
+	clock.update();
+	if (!clock.running()) clock_last_stopped = clock.read();
+	int_clock.update();
+	red_flash_clock.update();
+	int tenths, sec, min;
+	get_clock_parts(clock, min, sec, tenths);
+	base->qprint(740, 500, 0, "Game:   %02d:%02d.%01d", min, sec, tenths);
+	if (sync) base->print(940, 460, 0, "SYNC %c", sstat);
+	base->qprint(940, 500, 0, "P:%3hhu", period);
+	get_clock_parts(int_clock, min, sec, tenths);
+	base->qprint(740, 460, 0, "Int.:   %02d:%02d.%01d", min, sec, tenths);
+	if (active_clock == &(int_clock)) base->qprint(720, 460, 0, "\x10");
+	else base->qprint(720, 500, 0, "\x10");
+	
+	// teams and scores
+	base->qprint(230, 500, 0, "SOG");
+	base->qprint(110, 480, 0, "%-5s %3hhu   %3hhu", tm[0].name.substr(0,5).c_str(), tm[0].sc, tm[0].sog);
+	base->qprint(110, 460, 0, "%-5s %3hhu   %3hhu", tm[1].name.substr(0,5).c_str(), tm[1].sc, tm[1].sog);
 }

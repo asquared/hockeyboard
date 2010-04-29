@@ -60,6 +60,7 @@ void HockeyDrop::common_constructor() {
 	state = -1;
 	ppstate = 0;
 	moving = false;
+	TK = 0.1f;
 	base_w = base_y = base_r = pp_y = pp_w = 0;
 	text = text_w = strength = pptime = 0;
 	stat_sog = 0;
@@ -68,7 +69,11 @@ void HockeyDrop::common_constructor() {
 	compf = compb = comp = 0;
 	load_graphics();
 
+#ifdef LAX
+	lines[SI_DP] = string("FLAG");
+#else
 	lines[SI_DP] = string("DELAYED PENALTY");
+#endif
 	lines[SI_EN_V] = lines[SI_EN_H] = string("EMPTY NET");
 	lines[SI_PS_V] = lines[SI_PS_H] = string("PENALTY SHOT");
 	lines[SI_TO_V] = lines[SI_TO_H] = string("TIMEOUT");
@@ -282,6 +287,7 @@ float HockeyDrop::display(GLCairoSurface* main, HockeyData* data) {
 	//glPixelTransferf(GL_ALPHA_SCALE, 1.0f);
 }
 
+#ifndef LAX
 // ppstate:  -1: full strength  0: even strength  1: vis power play  2: home power play
 void HockeyDrop::ppdata(short adv, unsigned short strength, unsigned short pmin, unsigned short psec) {
 	if ( adv == 0 ) {
@@ -328,6 +334,16 @@ void HockeyDrop::ppdata(short adv, unsigned short strength, unsigned short pmin,
 		else ppstate = 2;
 	}
 	else state = -1;   // invalid case
+}
+#endif
+
+void HockeyDrop::draw_if(freetype::font_data* base) {
+	base->print(340, 500, 0, "\x10");
+	for (signed char i = 0; i <= 3; ++i) {
+		if (user_state + i <= MAX_USER_STATE)
+			base->print(360, (float) (500-20*i), 0, "%c %2hhd: %s", 
+			getid(user_state+i), user_state+i, getstring(user_state+i).substr(0,30).c_str());
+	}
 }
 
 // return codes:

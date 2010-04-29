@@ -20,11 +20,27 @@
 const int FINAL = 0x7f;
 
 // penalty timer queue length
+#ifdef LAX
+#define ACTIVE_QUEUE 3
+#define Q_LEN 30000			// 30 seconds
+#else
+#define ACTIVE_QUEUE 2
+#define Q_LEN 60000			// 1 minute
+#endif
 const int MAX_QUEUE = 16;
 
 // text translation functions
 string int2str(int i);
 string getclock(int min, int sec, int tenths);
+
+inline void get_clock_parts(Mclock& clk, int& min, int& sec, int& tenths) {
+	int ms = clk.read();
+	if ( ms % 100 == 0 ) tenths = ms / 100;
+	else tenths = (ms + 100) / 100;
+	min = tenths / (60 * 10);
+	sec = (tenths / 10) % 60;
+	tenths %= 10;
+}
 
 // 'time' is time since start of 1st period at which the penalty ends.
 // queue is all zeros if fully inactive.
@@ -32,18 +48,22 @@ class PenaltyQueue {
 	friend class HockeyData;		// avoiding a huge mess
 
 private:
-	int time[2];					// time that the currently running penalty ends
-	unsigned short rem_m[2];		// minutes left on upper/lower timer
-	unsigned short rem_s[2];		// seconds left on upper/lower timer
-	short qm[MAX_QUEUE];			// the (single) queue
-	unsigned short qt[2];			// time queued on upper/lower timers
+	int time[ACTIVE_QUEUE];					// time that the currently running penalty ends
+	unsigned short rem_m[ACTIVE_QUEUE];		// minutes left on upper/lower timer
+	unsigned short rem_s[ACTIVE_QUEUE];		// seconds left on upper/lower timer
+	unsigned short qt[ACTIVE_QUEUE];		// time queued on upper/lower timers
+	short qm[MAX_QUEUE];					// the (single) queue
 
 	void split_queue();									// splits queued penalties into upper/lower timers
 	int pop_queue(int slot, int curr, int time_mode);	// pop penalty from queue, returns time, or zero if empty
 	int push_queue(int min);							// push penalty to queue, returns position of added penalty
 
 	inline bool active() {
+#ifdef LAX
+		return (qm[0] > 0 || qm[1] > 0 || qm[2] > 0);
+#else
 		return (qm[0] > 0 || qm[1] > 0);
+#endif
 	}
 	inline bool active(unsigned int t) {
 		return (t < MAX_QUEUE && qm[t] > 0);
@@ -101,7 +121,7 @@ public:
 
 	//PenaltyTimer pt[4];
 	PenaltyQueue pq[2];
-	unsigned int pt_low_index;		// index of lowest of the 4 timers, which is displayed
+	unsigned int pt_low_index;		// index of lowest of the 4 (LAX:6) timers, which is displayed
 	
 	void reloadRosters();
 	void addPenalty(unsigned char team, unsigned char beginperiod, int begintime, int min);
@@ -111,6 +131,7 @@ public:
 	void delLastPenalty(unsigned int team);
 	void setPenaltyTime(unsigned int team, unsigned int slot, int per, int time, bool start);
 	void adjustPenaltyTime(unsigned int team, unsigned int slot, int time);
+	void setRemPenaltyTime(unsigned int team, unsigned int slot, int time);
 	void editQueue(unsigned int team, std::string qstr);
 	void delPenaltyAuto();
 	void updatePenalty();
@@ -122,6 +143,8 @@ public:
 	void stopRedFlash(unsigned char team);
 	void setppyellow();
 	void do_sync();
+
+	void draw_if(freetype::font_data* base);
 
 	HockeyData();
 	~HockeyData();

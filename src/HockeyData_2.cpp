@@ -4,10 +4,15 @@ int invertTime( unsigned char period, int timeleft, int perlen, int otlen ) {
 	// figure out time until next change of status
 	int out = (period-1) * perlen + ( perlen - timeleft );
 	// overtime adjust
+#ifdef LAX
+	if ( period > 4 && otlen < perlen ) out -= (period - 4) * (perlen - otlen);
+#else
 	if ( period > 3 && otlen < perlen ) out -= (period - 3) * (perlen - otlen);
+#endif
 	return out;
 }
 
+#ifndef LAX
 void PenaltyQueue::split_queue() {
 	int inc_time[2];
 	inc_time[0] = time[0];
@@ -17,23 +22,24 @@ void PenaltyQueue::split_queue() {
 		if (!qm[q]) return;  // end of queue
 		if (inc_time[0] <= inc_time[1]) {
 			qt[0] += qm[q];
-			inc_time[0] += qm[q] * 60000;
+			inc_time[0] += qm[q] * Q_LEN;
 		}
 		else {
 			qt[1] += qm[q];
-			inc_time[1] += qm[q] * 60000;
+			inc_time[1] += qm[q] * Q_LEN;
 		}
 	}
 }
+#endif
 
 // time_mode:
 // 0: start after previous penalty (previous penalty expired normally)
 // 1: start now (previous penalty deleted)
 int PenaltyQueue::pop_queue(int slot, int curr, int time_mode) {
-	qm[slot] = qm[2];
-	if (!time_mode) time[slot] += qm[slot] * 60000;
-	else time[slot] = curr + qm[slot] * 60000;
-	for (int q = 3; q < MAX_QUEUE; ++q) {
+	qm[slot] = qm[ACTIVE_QUEUE];
+	if (!time_mode) time[slot] += qm[slot] * Q_LEN;
+	else time[slot] = curr + qm[slot] * Q_LEN;
+	for (int q = ACTIVE_QUEUE+1; q < MAX_QUEUE; ++q) {
 		qm[q-1] = qm[q];
 		if (!qm[q]) break;
 	}
@@ -54,10 +60,11 @@ int PenaltyQueue::push_queue(int min) {
 }
 
 void HockeyData::addPenalty(unsigned char team, unsigned char beginperiod, int begintime, int min) {
+	if (team >= 2) return;
 	int curr = invertTime(beginperiod, begintime, perlen, otlen);
 	unsigned int slot = pq[team].push_queue(min);
-	if ( slot < 2 ) {
-		pq[team].time[slot] = curr + min * 60000;
+	if ( slot < ACTIVE_QUEUE ) {
+		pq[team].time[slot] = curr + min * Q_LEN;
 	}
 }
 
@@ -99,6 +106,7 @@ void HockeyData::delPenalty(unsigned int team, unsigned int slot) {
 	int curr = invertTime(period, clock.read(), perlen, otlen);
 	bool partial = false;
 
+#ifndef LAX
 	if (pq[team].qm[slot] >= 4 && !(pq[team].qm[slot] & 1)) {
 		pq[team].qm[slot] -= 2;
 		partial = true;
@@ -107,18 +115,19 @@ void HockeyData::delPenalty(unsigned int team, unsigned int slot) {
 		pq[team].qm[slot] -= 5;
 		partial = true;
 	}
+#endif
 
-	if (slot == 0 || slot == 1) {
+	if (slot < ACTIVE_QUEUE) {
 		if (partial) {
 			//int rem = pq[team].time[slot] - curr;
-			//pq[team].qm[slot] = min( pq[team].qm[slot], rem / 120000 * 2 );
-			if (pq[team].time[slot] - curr > pq[team].qm[slot] * 60000) {
-				pq[team].time[slot] = curr + pq[team].qm[slot] * 60000;
+			//pq[team].qm[slot] = min( pq[team].qm[slot], rem / (2*Q_LEN) * 2 );
+			if (pq[team].time[slot] - curr > pq[team].qm[slot] * Q_LEN) {
+				pq[team].time[slot] = curr + pq[team].qm[slot] * Q_LEN;
 			}
 		}
 		else {
 			pq[team].pop_queue(slot, curr, 1);
-			//pq[team].time[slot] = curr + pq[team].qm[slot] * 60000;
+			//pq[team].time[slot] = curr + pq[team].qm[slot] * Q_LEN;
 		}
 	}
 	else {
@@ -156,8 +165,8 @@ void HockeyData::editQueue(unsigned int team, std::string qstr) {
 	int curr = invertTime(period, clock.read(), perlen, otlen);
 	for ( int i = 0; i < MAX_QUEUE; ++i ) {
 		if (nums[i] > 0 && nums[i] < 99) {
-			if (i < 2) {
-				int new_time = curr + nums[i] * 60000;
+			if (i < ACTIVE_QUEUE) {
+				int new_time = curr + nums[i] * Q_LEN;
 				if (pq[team].qm[i] <= 0 || pq[team].time[i] > new_time) {
 					pq[team].time[i] = new_time;
 				}	
@@ -172,6 +181,7 @@ void HockeyData::editQueue(unsigned int team, std::string qstr) {
 	pq[team].split_queue();
 }
 
+#ifndef LAX
 void HockeyData::delPenaltyAuto() {
 	unsigned char ac = 0; 
 	unsigned char ai;
@@ -185,16 +195,24 @@ void HockeyData::delPenaltyAuto() {
 	}
 	if ( ac == 1 ) delPenalty(ai >> 1, ai & 1);
 }
+#endif
 
 void HockeyData::setPenaltyTime(unsigned int team, unsigned int slot, int per, int time, bool start) {
-	if (team > 1 || slot > 1 || per < 1 || per > 9 || time < 0 || time > perlen) return;
-	pq[team].time[slot] = invertTime(per, time, perlen, otlen) + (start ? (60000 * pq[team].qm[slot]) : 0);
+	if (team > 1 || slot >= ACTIVE_QUEUE || per < 1 || per > 9 || time < 0 || time > perlen) return;
+	pq[team].time[slot] = invertTime(per, time, perlen, otlen) + (start ? (Q_LEN * pq[team].qm[slot]) : 0);
 	pq[team].split_queue();
 }
 
 void HockeyData::adjustPenaltyTime(unsigned int team, unsigned int slot, int time) {
-	if (team > 1 || slot > 1) return;
+	if (team > 1 || slot >= ACTIVE_QUEUE) return;
 	pq[team].time[slot] += time;
+	pq[team].split_queue();
+}
+
+void HockeyData::setRemPenaltyTime(unsigned int team, unsigned int slot, int time) {
+	if (team > 1 || slot >= ACTIVE_QUEUE) return;
+	int curr = invertTime(period, clock.read(), perlen, otlen);
+	pq[team].time[slot] = curr + time;
 	pq[team].split_queue();
 }
 
@@ -203,7 +221,7 @@ void HockeyData::updatePenalty() {
 	int low = 0x7fffffff;
 	int rem;
 	for (int q = 0; q < 2; ++q) {
-		for (int t = 0; t < 2; ++t) {
+		for (int t = 0; t < ACTIVE_QUEUE; ++t) {
 			register short& qm = pq[q].qm[t];
 			register unsigned short& qt = pq[q].qt[t];
 			rem = 0;
@@ -212,16 +230,16 @@ void HockeyData::updatePenalty() {
 
 			// kill combinations (i.e. 4 = 2+2, 7 = 5+2, etc.)
 /*			if (qm >= 4 && qm < 10 && !(qm & 1)) {
-				if (rem <= (qm - 2) * 60000) qm -= 2;
+				if (rem <= (qm - 2) * Q_LEN) qm -= 2;
 			}
 			else if (qm >= 7 && (qm & 1)) {
-				if (rem <= (qm - 5) * 60000) qm -= 5;
+				if (rem <= (qm - 5) * Q_LEN) qm -= 5;
 			}
 */
 			// kill front of queue (and pop the next into the front) at right time
 			if (qt != 0 && rem <= 0) {
 				pq[q].pop_queue(t, curr, 0);
-				//pq[q].time[t] += pq[q].qm[t] * 60000;
+				//pq[q].time[t] += pq[q].qm[t] * Q_LEN;
 				rem = pq[q].time[t] - curr;
 			}
 
@@ -240,12 +258,12 @@ void HockeyData::updatePenalty() {
 				pq[q].rem_s[t] = 0;
 			}
 			else { 
-				rem += qt * 60000;						// add queued time
+				rem += qt * Q_LEN;						// add queued time
 				if ( rem % 1000 == 0 ) rem /= 1000;
 				else rem = (rem + 1000) / 1000;
 				if (rem < low) { 
 					low = rem;
-					pt_low_index = q*2 + t;
+					pt_low_index = q*ACTIVE_QUEUE + t;
 				}
 				pq[q].rem_m[t] = rem / 60;
 				pq[q].rem_s[t] = rem % 60;
@@ -257,30 +275,43 @@ void HockeyData::updatePenalty() {
 void HockeyData::getPenaltyInfo(unsigned short& vis, unsigned short& home, unsigned short& rmin, unsigned short& rsec) {
 	updatePenalty();
 
-	vis = 5;
-	home = 5;
+#ifdef LAX
+	vis = home = 10;
+#else
+	vis = home = 5;
+#endif
 	
 	if ( pq[0].qm[0] > 0 ) --vis;
 	if ( pq[0].qm[1] > 0 ) --vis;
 	if ( pq[1].qm[0] > 0 ) --home;
 	if ( pq[1].qm[1] > 0 ) --home;
+#ifdef LAX
+	if ( pq[0].qm[2] > 0 ) --vis;
+	if ( pq[1].qm[2] > 0 ) --home;
+#endif
 
 	rmin = rsec = 0;
+#ifdef LAX
+	int q = pt_low_index / 3;
+	int t = pt_low_index % 3;
+#else
 	int q = pt_low_index >> 1;
 	int t = pt_low_index & 1;
+#endif
 	rmin = pq[q].rem_m[t];
 	rsec = pq[q].rem_s[t];
 
 }
 
+#ifndef LAX
 void HockeyData::printPenalties(std::string* disp, freetype::font_data* base) {
 	stringstream ss;
 	for (unsigned int q = 0; q <= 1; ++q) {
-		for (unsigned int t = 0; t <= 1; ++t) {
+		for (unsigned int t = 0; t < ACTIVE_QUEUE; ++t) {
 			base->print(360.0f + 360.0f*q, 400.0f-20.0f*t, 0, "%d --%2hu:%02hu  %2d  +%u",
 				t+1, pq[q].rem_m[t], pq[q].rem_s[t], pq[q].qm[t], pq[q].qt[t]);
 		}
-		for (int t = 2; t < MAX_QUEUE; ++t) {
+		for (int t = ACTIVE_QUEUE; t < MAX_QUEUE; ++t) {
 			if (pq[q].qm[t] > 0) ss << pq[q].qm[t] << ' ';
 			else break;
 		}
@@ -294,3 +325,4 @@ void HockeyData::printPenalties(std::string* disp, freetype::font_data* base) {
 		//	pq[q].qm[14], pq[q].qm[15]); 
 	}
 }
+#endif

@@ -57,6 +57,8 @@ public:
 
 	HockeyLogic();
 
+	void draw_if(freetype::font_data* base);
+
 	void clearStrings(int, int);
 
 	void clear();

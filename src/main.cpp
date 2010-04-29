@@ -41,7 +41,6 @@ void display() {
 
 
 	HockeyData& d = *data;
-	float x, y;
 	
 	unsigned char key = data->keymode;
 	if (key == 'b') {
@@ -68,7 +67,7 @@ void display() {
 		return;
 	}
 
-	// synchronizer
+/*	// synchronizer
 	d.do_sync();
 
 	// clock stuff
@@ -117,6 +116,11 @@ void display() {
 	base->print(0, 40, 0, logic->disp[42].c_str());
 	if (!blink_time) base->print(0, 20, 0, logic->disp[43].c_str());
 	else base->print(0, 20, 0, (logic->disp[43] + "\x15").c_str());
+*/
+	// primary drawing functions
+	data->draw_if(base);
+	drop->draw_if(base);
+	logic->draw_if(base);
 
 	// powerplay stuff for drops
 	unsigned short vis, home, psec, pmin;
@@ -124,22 +128,24 @@ void display() {
 	d.printPenalties(logic->disp, base);
 	//base->print(20, 400, 0, "%-5s %hu", d.name[0].substr(0,5).c_str(), vis );
 	//base->print(20, 380, 0, "%-5s %hu", d.name[1].substr(0,5).c_str(), home);
+#ifdef LAX
+	if (vis-2 > home) base->qprint(60, 480, 0, "+++");
+	else
+#endif
 	if (vis-1 > home) base->qprint(70, 480, 0, "++");
 	else if (vis > home) base->qprint(80, 480, 0, "+");
+#ifdef LAX
+	else if (home-2 > vis) base->qprint(60, 460, 0, "+++");
+#endif
 	else if (home-1 > vis) base->qprint(70, 460, 0, "++");
 	else if (home > vis) base->qprint(80, 460, 0, "+");
-	base->qprint(100, 400, 0, "%hu on %hu  -- %2hu:%02hu", vis, home, pmin, psec);
+	base->qprint(80, 400, 0, "%2hu on %2hu  -- %2hu:%02hu", vis, home, pmin, psec);
 	//base->print(210, 400, 0, "");
 	drop->ppdata(vis-home, min(vis, home), pmin, psec);
 
-	// bitmaps
-
-	// stupid yellow team names
-	bool yellow_l = (drop->getyellow() == 1);
-	bool yellow_r = (drop->getyellow() == 2);
-
 	hd->draw(data, drop);
 
+	// chroma key margin erase
 	if (key == 'b' || key == 'g') {
 		if (key == 'b') glColor3ub(0, 0, 240);
 		else glColor3ub(0, 240, 0);

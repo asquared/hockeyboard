@@ -6,13 +6,19 @@ EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
+		Debug LAX = Debug LAX
 		Release = Release
+		Release LAX = Release LAX
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Debug.ActiveCfg = Debug|Win32
 		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Debug.Build.0 = Debug|Win32
+		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Debug LAX.ActiveCfg = Debug LAX|Win32
+		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Debug LAX.Build.0 = Debug LAX|Win32
 		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Release.ActiveCfg = Release|Win32
 		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Release.Build.0 = Release|Win32
+		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Release LAX.ActiveCfg = Release LAX|Win32
+		{D25BD0D2-9F92-4FC6-B3D4-93755BFF25D8}.Release LAX.Build.0 = Release LAX|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

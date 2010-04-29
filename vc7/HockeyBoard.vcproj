@@ -85,7 +85,113 @@
 				Name="VCLinkerTool"
 				ShowProgress="0"
 				OutputFile="$(OutDir)/HockeyBoard.exe"
-				Version="3.0.2"
+				Version="3.0.3"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="C:\cairo_new\lib"
+				IgnoreAllDefaultLibraries="FALSE"
+				IgnoreDefaultLibraryNames=""
+				GenerateDebugInformation="TRUE"
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Debug LAX|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="C:\cairo_new\include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;LAX"
+				MinimalRebuild="TRUE"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="5"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/LacrosseBoard.exe"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="C:\cairo_new\lib"
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/HockeyBoard.pdb"
+				SubSystem="1"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="Release LAX|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				GlobalOptimizations="TRUE"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="3"
+				AdditionalIncludeDirectories="C:\cairo_new\include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;LAX"
+				RuntimeLibrary="4"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="TRUE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				ShowProgress="0"
+				OutputFile="$(OutDir)/LacrosseBoard.exe"
+				Version="3.0.3"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\cairo_new\lib"
 				IgnoreAllDefaultLibraries="FALSE"
@@ -143,13 +249,22 @@
 				RelativePath="..\src\HockeyData_2.cpp">
 			</File>
 			<File
+				RelativePath="..\src\HockeyData_2_lax.cpp">
+			</File>
+			<File
 				RelativePath="..\src\HockeyDraw.cpp">
 			</File>
 			<File
 				RelativePath="..\src\HockeyDrop.cpp">
 			</File>
 			<File
+				RelativePath="..\src\HockeyDrop_lax.cpp">
+			</File>
+			<File
 				RelativePath="..\src\HockeyLogic.cpp">
+			</File>
+			<File
+				RelativePath="..\src\HockeyLogic_lax.cpp">
 			</File>
 			<File
 				RelativePath="..\src\HockeyRoster.cpp">
@@ -159,6 +274,9 @@
 			</File>
 			<File
 				RelativePath="..\src\keyboard.cpp">
+			</File>
+			<File
+				RelativePath="..\src\keyboard_lax.cpp">
 			</File>
 			<File
 				RelativePath="..\src\Keybuffer.cpp">

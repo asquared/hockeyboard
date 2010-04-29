@@ -64,7 +64,8 @@ public:
 	string getstring(signed short line);
 	void settime(short min_in, short sec_in);
 	float display(GLCairoSurface* main, HockeyData* data);
-	void ppdata( short adv, unsigned short strength, unsigned short pmin, unsigned short psec);
+	void ppdata(short adv, unsigned short strength, unsigned short pmin, unsigned short psec);
+	void draw_if(freetype::font_data* base);
 	signed char getyellow();
 	void getyellow(float y[2]);
 
