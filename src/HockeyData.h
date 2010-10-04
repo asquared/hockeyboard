@@ -32,6 +32,7 @@ const int MAX_QUEUE = 16;
 // text translation functions
 string int2str(int i);
 string getclock(int min, int sec, int tenths);
+string getclock_nt(int min, int sec, int tenths);
 
 inline void get_clock_parts(Mclock& clk, int& min, int& sec, int& tenths) {
 	int ms = clk.read();
@@ -112,6 +113,7 @@ public:
 	char sstat;
 	bool sync;
 	bool sync_tr;
+	bool use_tenths;
 	int start_delay;
 	int stop_delay;
 

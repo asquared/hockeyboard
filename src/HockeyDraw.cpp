@@ -114,7 +114,8 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	}
 
 	if (data->active_clock == &(data->int_clock)) {
-		clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
+		if (data->use_tenths) clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
+		else clock->writetext(getclock_nt(min,sec,tenths), 66, -9, 1);
 		period->clear();
 	}
 	else if (data->period == 127) {
@@ -122,7 +123,8 @@ void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 		period->clear();
 	}
 	else {
-		clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
+		if (data->use_tenths) clock->writetext(getclock(min,sec,tenths), 66, -9, 1);
+		else clock->writetext(getclock_nt(min,sec,tenths), 66, -9, 1);
 		period->writetextshrink(data->getStringPeriod(), 31, 18, 1, 35);
 	}
 

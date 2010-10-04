@@ -11,14 +11,23 @@ std::string int2str(int i) {
 std::string getclock(int min, int sec, int tenths) {
 	char c[20];
 	if (min == 0) {
-		sprintf(c, ":%02d.%01d", sec, tenths);
+		snprintf(c, 20, ":%02d.%01d", sec, tenths);
 	}
 	else {
-		sprintf(c, "%d:%02d", min, sec);
+		snprintf(c, 20, "%d:%02d", min, sec);
 	}
 	return std::string(c);
 }
 
+std::string getclock_nt(int min, int sec, int tenths) {
+	char c[20];
+	if (tenths) ++sec;
+	if (sec >= 60) {
+		sec -= 60; ++min;
+	}
+	snprintf(c, 20, "%d:%02d", min, sec);
+	return std::string(c);
+}
 
 //inline void normalize_queue(PenaltyTimer& t);
 
@@ -54,6 +63,7 @@ HockeyData::HockeyData() {
 	keymode = 'l';
 	sync = false;
 	sync_tr = false;
+	use_tenths = true;
 	sstat = ' ';
 	start_delay = 0;
 	stop_delay = 0;
@@ -232,12 +242,19 @@ void HockeyData::do_sync_tr() {
 					sstat = 'N';
 				}
 				else {
-					if (clock.read() > 60900) {
+					// displaying 1:01 or more (or tenths not used)
+					if (!use_tenths || clock.read() > 60900) {
 						clock.adjust(-1000);
 						sync_ignore_count = 120;
 					}
-					else {
+					// displaying 59.9 or less
+					else if (clock.read() <= 59900) {
 						clock.adjust(-100);
+						sync_ignore_count = 12;
+					}
+					// displaying 1:00 exactly (59901 to 60900 ms)
+					else {
+						clock.set(59900);
 						sync_ignore_count = 12;
 					}
 					sstat = 'T';

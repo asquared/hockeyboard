@@ -1,5 +1,16 @@
 #include "main.h"
 
+bool parse_bool(const string& in, bool def) {
+	if (in.size() == 0) return def;
+	if (in[0] == 't' || in[0] == 'T' || in[0] == 'y' || in[0] == 'Y') return true;
+	if (in[0] <= '9' && in[0] >= '0') {
+		int i = 0;
+		IniParser::parse(in, i);
+		if (i != 0) return true;
+	}
+	return false;
+}
+
 void load_settings(const char* filename) {
 	IniParser ip;
 	ip.readfile(string(filename), ";#");
@@ -85,6 +96,12 @@ void load_settings(const char* filename) {
 		temp_int = 0x80000000;
 		IniParser::parse(in, temp_int);
 		if (temp_int != 0x80000000) data->stop_delay = temp_int;
+	}
+	if (ip.get("Sync", "TransitionSync", in)) {
+		data->sync_tr = parse_bool(in, false);
+	}
+	if (ip.get("Sync", "UseTenths", in)) {
+		data->use_tenths = parse_bool(in, true);
 	}
 
 	string team[2];

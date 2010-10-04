@@ -1193,9 +1193,12 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[3] = "D: Set transition delays";
 			disp[4] = "";
 			disp[5] = "M: Switch sync mode";
-			clearStrings(6,41);
+			disp[6] = "";
+			disp[7] = "T: Use tenths of seconds?";
+			clearStrings(8,41);
 			disp[17] = int2str(data->start_delay) + "/" + int2str(data->stop_delay);
 			disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
+			disp[21] = (data->use_tenths) ? "YES" : "NO";
 			port = data->ssync.get_port();
 			if (port == 0) disp[10] = "Currently using port: NONE";
 			else disp[10] = "Currently using port: COM" + int2str(port);
@@ -1207,7 +1210,8 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			if ( key >= 'A' && key <= 'Z' ) key += 32;
 			if (key == 'p') {
 				disp[42] = "Enter number of COM port:";
-				clearStrings(0,1);
+				clearStrings(0,7);
+				clearStrings(17,21);
 				minor = 10;
 			}
 			else if (key == 's') {
@@ -1227,6 +1231,10 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			else if (key == 'm') {
 				data->sync_tr = !data->sync_tr;
 				disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
+			}
+			else if (key == 't') {
+				data->use_tenths = !data->use_tenths;
+				disp[21] = (data->use_tenths) ? "YES" : "NO";
 			}
 			kbuf->clear();
 			break;
