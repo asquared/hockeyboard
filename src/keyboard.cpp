@@ -7,7 +7,7 @@ const int jumpstate[] = {46, 0, 6, 12, 20, 30, 33, 36, 39, 42};
 const int penaltykeys[] = {'p',';','[','\'','P',':','{','\"'};
 
 void keyboard( unsigned char key, int x, int y ) {
-	//cout << int2str(key) << endl;
+	//cout << "key: " << int2str(key) << "  ";
 
 	// Del (or Ctrl-Bksp)
 	if ( key == 127 ) {
@@ -96,9 +96,10 @@ void keyboard( unsigned char key, int x, int y ) {
 }
 
 void specialkey( int key, int x, int y ) {
-	//cout << "sp:" << int2str(key) << endl;
+	//cout << "spk: " << int2str(key) << "  ";
 	
 	int mod = glutGetModifiers();
+	//cout << "mod: " << int2str(mod) << endl;
 	//if (mod == GLUT_ACTIVE_ALT && key == GLUT_KEY_F4) quit(0);
 	
 	// clock controls (except DELETE)
