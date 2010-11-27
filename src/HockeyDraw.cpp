@@ -88,7 +88,13 @@ HockeyDraw::~HockeyDraw() {
 void HockeyDraw::draw(HockeyData* data, HockeyDrop* drop) {
 	// clock crap
 	int min, sec, tenths;
+	uint32_t clock_send;
+
 	get_clock_parts(*(data->active_clock), min, sec, tenths);
+
+	/* send clock data over socket to external systems (i.e. openreplay) */
+	clock_send = htonl(min * 600 + sec * 10 + tenths);
+	clock_socket.send(&clock_send, sizeof(clock_send));
 
 	main->clear();
 	bg->painton(main, 0, 0, 1.0);

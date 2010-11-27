@@ -31,6 +31,9 @@ public:
 	GLCairoSurface* bg;
 	GLCairoSurface* main;
 
+	// clock output (to instant replay etc...)
+	ClockSocket clock_socket;
+
 	HockeyDraw();
 	~HockeyDraw();
 	void init_surfaces();
