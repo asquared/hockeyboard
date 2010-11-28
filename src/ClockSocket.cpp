@@ -1,4 +1,6 @@
 #include "ClockSocket.h"
+#include <stdexcept>
+#include <stdio.h>
 
 ClockSocket::ClockSocket( ) {
 #ifdef WINDOWS
@@ -24,10 +26,12 @@ ClockSocket::ClockSocket( ) {
 }
 
 ClockSocket::~ClockSocket( ) {
+#ifdef WINDOWS
 	--winsock_started;
 	if (winsock_started == 0) {
 		WSACleanup( );
 	}
+#endif
 }
 
 void ClockSocket::send(void *thing_to_send, size_t size) {
