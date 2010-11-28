@@ -9,7 +9,9 @@
 #include <freetype/fttrigon.h>
 
 //OpenGL Headers 
+#ifdef WINDOWS
 #include <windows.h>		//(the GL headers need it)
+#endif
 #include <GL/gl.h>
 #include <GL/glu.h>
 
