@@ -9,6 +9,7 @@
 #include <GL/glu.h>
 #include "HockeyData.h"
 #include "HockeyDrop.h"
+#include "ClockSocket.h"
 
 class HockeyDraw {
 public:
