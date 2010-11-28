@@ -8,7 +8,7 @@
 // (made into a real class, fixed rendering bugs, added Unicode BMP support)
 
 //Include our header file.
-#include "freetype.h"
+#include "FreeType.h"
 
 namespace freetype {
 
