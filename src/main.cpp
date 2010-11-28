@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdexcept>
 
 // global pointers
 freetype::font_data* base;
@@ -228,6 +229,7 @@ int main( int argc, char* argv[] ) {
 	*/
 
 	// mouse cursors
+#ifdef WINDOWS
 	POINT p;
 	GetCursorPos(&p);
 	if ( p.y >= 0 && p.y < 100 ) { 
@@ -237,7 +239,8 @@ int main( int argc, char* argv[] ) {
 	curN = LoadCursor(NULL, IDC_ARROW);
 	curG = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_GREEN));
 	curB = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_BLUE));
-	
+#endif
+
 	// display starting text
 	logic->clear();
 

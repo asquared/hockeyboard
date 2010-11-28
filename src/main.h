@@ -33,7 +33,10 @@ extern HockeyLogic* logic;
 extern HockeyDrop* drop;
 extern HockeyDraw* hd;
 extern Keybuffer* kbuf;
-//extern HCURSOR curN, curG, curB;
+
+#ifdef WINDOWS
+extern HCURSOR curN, curG, curB;
+#endif
 
 // callbacks
 void display();
