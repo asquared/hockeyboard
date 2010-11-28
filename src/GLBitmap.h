@@ -1,9 +1,13 @@
 #ifndef _glbitmap_h_
 #define _glbitmap_h_
+
+#ifdef WINDOWS
 #include <windows.h>
+#endif
+
 #include <stdio.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <string>
 
 typedef unsigned char byte;
