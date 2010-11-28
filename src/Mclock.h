@@ -3,11 +3,19 @@
 #ifndef _mclock_h_
 #define _mclock_h_
 
+#ifdef WINDOWS
+
 #ifdef _MSC_VER
 #pragma comment(lib, "winmm")
 #endif //_MSC_VER
 
 #include <windows.h>
+
+#else
+
+#include "timegettime.h"
+
+#endif
 
 class Mclock {
 

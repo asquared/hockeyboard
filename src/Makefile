@@ -18,6 +18,7 @@ hockeyboard_OBJECTS = \
 	mouse.o \
 	serialsync.o \
 	settings.o \
+	timegettime.o \
 
 hockeyboard_LIBS = -lcairo -lpango -lGL -lGLUT
 CXX=gcc
