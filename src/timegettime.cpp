@@ -29,7 +29,7 @@ uint32_t timeGetTime(void) {
     }
 
     /* subtract tv_initial from tv */
-    useconds = tv.seconds - tv_initial.seconds;
+    useconds = tv.tv_sec - tv_initial.tv_sec;
     useconds *= 1000000;
     useconds += tv.tv_usec;
     useconds -= tv_initial.tv_usec;

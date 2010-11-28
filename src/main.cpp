@@ -207,6 +207,7 @@ int main( int argc, char* argv[] ) {
 
 	// load fonts
 	base = new freetype::font_data;
+#ifdef WINDOWS
 	try {
 		string fontdir = string(getenv("WINDIR"));
 		fontdir += "\\Fonts\\";
@@ -216,7 +217,11 @@ int main( int argc, char* argv[] ) {
 	catch (std::runtime_error e) {
 		quit(1);
 	}
-
+#else
+    fprintf(stderr, "Initialize base\n");
+    base->init("DejaVuSansMono.ttf", 12, 16, 255);
+#endif
+    fprintf(stderr, "Initialize state\n");
 	// generate data object
 	data = new HockeyData;
 	logic = new HockeyLogic;
@@ -247,6 +252,7 @@ int main( int argc, char* argv[] ) {
 	// new draw code
 	hd = new HockeyDraw;
 
+    fprintf(stderr, "Load settings...\n");
 	load_settings("settings.ini");
 
 	// setup window callbacks
@@ -258,9 +264,10 @@ int main( int argc, char* argv[] ) {
 	glutPassiveMotionFunc( mousemove );
 	glutMouseFunc( mouseclick );
 
-
+    fprintf(stderr, "GLUT main loop...\n");
 	// enter main loop
     glutMainLoop();
+    fprintf(stderr, "Done!\n");
 
 	quit(0);
 	return 0;

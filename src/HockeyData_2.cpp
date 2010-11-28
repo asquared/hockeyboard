@@ -1,4 +1,5 @@
 #include "HockeyData.h"
+#include "utility.h"
 
 int invertTime( unsigned char period, int timeleft, int perlen, int otlen ) {
 	// figure out time until next change of status

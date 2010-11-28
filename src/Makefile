@@ -6,6 +6,7 @@ hockeyboard_OBJECTS = \
 	GLCairoSurface.o \
 	GLCairoTextSurface.o \
 	HockeyData.o \
+	HockeyData_2.o \
 	HockeyDraw.o \
 	HockeyDrop.o \
 	HockeyLogic.o \
@@ -16,12 +17,17 @@ hockeyboard_OBJECTS = \
 	main.o \
 	Mclock.o \
 	mouse.o \
-	serialsync.o \
+	serialsync_unix.o \
 	settings.o \
 	timegettime.o \
 
-hockeyboard_LIBS = -lcairo -lpango -lGL -lGLUT
-CXX=gcc
+hockeyboard_LIBS = -lGL -lGLU -lglut
+hockeyboard_LIBS += `pkg-config --libs freetype2`
+hockeyboard_LIBS += `pkg-config --libs cairo`
+hockeyboard_LIBS += `pkg-config --libs pango`
+hockeyboard_LIBS += `pkg-config --libs pangocairo`
+
+CXX=g++
 CFLAGS=-g -O2
 
 CFLAGS += `pkg-config --cflags freetype2`

@@ -1,11 +1,14 @@
 #include "serialsync.h"
+#include <unistd.h>
+#include <fcntl.h>
+#include <termios.h>
 
 // counts '1' bits in a nibble (4 bit value)
 const unsigned char bitcount[] = { 0, 1, 1, 2, 1, 2, 2, 3,
 								   1, 2, 2, 3, 2, 3, 3, 4 };
 
 SerialSync::SerialSync() {
-	hSerial = NULL;
+	portfd = -1;
 	port = -1;
 }
 
@@ -31,7 +34,7 @@ bool SerialSync::port_open(int p) {
 
     portfd = open(s, O_RDWR | O_NOCTTY);
     
-    if (tcgetattr(fd, &attr) != 0) {
+    if (tcgetattr(portfd, &attr) != 0) {
         perror("tcgetattr");
         port = -1;
         return false;
@@ -42,7 +45,7 @@ bool SerialSync::port_open(int p) {
     cfsetispeed(&attr, B2400);
     cfsetospeed(&attr, B2400);
     /* 8N1 default?? */
-    if (tcsetattr(fd, TCSAFLUSH, &attr) != 0) {
+    if (tcsetattr(portfd, TCSAFLUSH, &attr) != 0) {
         perror("tcsetattr");
         port = -1;
         return false;
