@@ -1,9 +1,12 @@
 #ifndef _hockeydraw_h_
 #define _hockeydraw_h_
 
+#ifdef WINDOWS
 #include <windows.h>
-#include <gl/gl.h>
-#include <gl/glu.h>
+#endif
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "HockeyData.h"
 #include "HockeyDrop.h"
 
