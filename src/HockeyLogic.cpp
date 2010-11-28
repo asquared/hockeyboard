@@ -1,6 +1,7 @@
 #ifndef LAX
 #include "HockeyLogic.h"
 #include <iostream>
+#include "utility.h"
 
 const char* HockeyLogic::penalties[] = { 
 	"HITTING FROM BEHIND",
@@ -48,24 +49,24 @@ HockeyLogic::HockeyLogic() {
 	for (int i = 0; i < 58; ++i) {
 		funcarray[i] = NULL;
 	}
-	funcarray[1] = HockeyLogic::logicGAnn;					// Ctrl-A
-	funcarray[3] = HockeyLogic::logicClock;					// Ctrl-C
-	funcarray[7] = HockeyLogic::logicGoals;					// Ctrl-G
-	funcarray[9] = HockeyLogic::logicIntClk;				// Ctrl-I
-	funcarray[11] = HockeyLogic::logicKey;					// Ctrl-K
-	funcarray[12] = HockeyLogic::logicStat;					// Ctrl-L
-	funcarray[14] = HockeyLogic::logicNames;				// Ctrl-N
-	funcarray[15] = HockeyLogic::logicColors;				// Ctrl-O
-	funcarray[16] = HockeyLogic::logicPAnn;					// Ctrl-P
-	funcarray[17] = HockeyLogic::logicPeriod;				// Ctrl-Q
-	funcarray[18] = HockeyLogic::logicRoster;				// Ctrl-R
-	funcarray[19] = HockeyLogic::logicStat;					// Ctrl-S
-	funcarray[20] = HockeyLogic::logicPTime;				// Ctrl-T
-	funcarray[25] = HockeyLogic::logicSync;					// Ctrl-Y
-	funcarray[26] = HockeyLogic::logicReset;				// Ctrl-Z
-	funcarray[27] = HockeyLogic::logicClear;				// ESC
-	funcarray[30] = HockeyLogic::logicText;					// TAB
-	funcarray[31] = HockeyLogic::logicQuit;					// Shift-ESC
+	funcarray[1] = &HockeyLogic::logicGAnn;					// Ctrl-A
+	funcarray[3] = &HockeyLogic::logicClock;					// Ctrl-C
+	funcarray[7] = &HockeyLogic::logicGoals;					// Ctrl-G
+	funcarray[9] = &HockeyLogic::logicIntClk;				// Ctrl-I
+	funcarray[11] = &HockeyLogic::logicKey;					// Ctrl-K
+	funcarray[12] = &HockeyLogic::logicStat;					// Ctrl-L
+	funcarray[14] = &HockeyLogic::logicNames;				// Ctrl-N
+	funcarray[15] = &HockeyLogic::logicColors;				// Ctrl-O
+	funcarray[16] = &HockeyLogic::logicPAnn;					// Ctrl-P
+	funcarray[17] = &HockeyLogic::logicPeriod;				// Ctrl-Q
+	funcarray[18] = &HockeyLogic::logicRoster;				// Ctrl-R
+	funcarray[19] = &HockeyLogic::logicStat;					// Ctrl-S
+	funcarray[20] = &HockeyLogic::logicPTime;				// Ctrl-T
+	funcarray[25] = &HockeyLogic::logicSync;					// Ctrl-Y
+	funcarray[26] = &HockeyLogic::logicReset;				// Ctrl-Z
+	funcarray[27] = &HockeyLogic::logicClear;				// ESC
+	funcarray[30] = &HockeyLogic::logicText;					// TAB
+	funcarray[31] = &HockeyLogic::logicQuit;					// Shift-ESC
 
 }
 
@@ -437,7 +438,6 @@ void HockeyLogic::logicKey(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, Ho
 			if ( key >= 'A' && key <= 'Z' ) key += 32;
 			if ( key == 'b' || key == 'g' || key == 'l' || key == 'x' ) {
 				data->keymode = key;
-				SetCursor(NULL);		// kind of a temporary fix
 				clear();
 			}
 			kbuf->clear();
