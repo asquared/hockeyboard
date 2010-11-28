@@ -1,21 +1,24 @@
 #ifndef _main_h_
 #define _main_h_
 
+#ifdef WINDOWS
 // required libraries
 #pragma comment(lib, "opengl32")
 #pragma comment(lib, "glu32")
 #pragma comment(lib, "glaux")
 
 #include <windows.h>		// Header File For Windows
-#include <math.h>			// Header File For Windows Math Library
+#endif
+
+#include <math.h>			// Header File For C Math Library
 #include <stdio.h>			// Header File For Standard Input/Output
 #include <stdarg.h>			// Header File For Variable Argument Routines
 
-#include <gl/gl.h>
-#include <gl/glu.h>
-#include <gl/glut32w.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 
-#include "..\vc7\resource.h"
+//#include "..\vc7\resource.h"
 #include "FreeType.h"
 #include "HockeyData.h"
 #include "HockeyDrop.h"
@@ -30,7 +33,7 @@ extern HockeyLogic* logic;
 extern HockeyDrop* drop;
 extern HockeyDraw* hd;
 extern Keybuffer* kbuf;
-extern HCURSOR curN, curG, curB;
+//extern HCURSOR curN, curG, curB;
 
 // callbacks
 void display();
