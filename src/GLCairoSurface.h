@@ -4,16 +4,22 @@
 #define MAX_ALT 4
 
 // required libraries
+#ifdef WINDOWS
 #pragma comment(lib, "pango-1.0.lib")
 #pragma comment(lib, "pangocairo-1.0.lib")
 #pragma comment(lib, "libcairo.lib")
 #pragma comment(lib, "gobject-2.0.lib")
 #pragma comment(lib, "opengl32")
+#endif
 
 #include <pango/pangocairo.h>
 #include <pango/pango-font.h>
+
+#ifdef WINDOWS
 #include <windows.h>
-#include <gl/gl.h>
+#endif
+
+#include <GL/gl.h>
 #include <string>
 #include <iostream>
 
