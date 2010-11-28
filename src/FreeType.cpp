@@ -9,6 +9,8 @@
 
 //Include our header file.
 #include "FreeType.h"
+#include <stdexcept> // runtime_error
+#include "utility.h"
 
 namespace freetype {
 
