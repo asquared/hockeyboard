@@ -166,3 +166,11 @@ void SerialSync::clear_buffer() {
 unsigned char SerialSync::count_bits(byte in) {
 	return bitcount[ (in >> 4) ] + bitcount[ (in & 0xf) ];
 }
+
+bool SerialSync::ok() {
+    if (port == 0) { 
+        return false;
+    } else {
+        return true;
+    }
+}

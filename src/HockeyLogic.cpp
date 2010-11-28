@@ -1200,7 +1200,7 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
 			disp[21] = (data->use_tenths) ? "YES" : "NO";
 			port = data->ssync.get_port();
-			if (port == 0) disp[10] = "Currently using port: NONE";
+			if (!data->ssync.valid( )) disp[10] = "Currently using port: NONE";
 			else disp[10] = "Currently using port: COM" + int2str(port);
 			minor = 1;
 			kbuf->clear();

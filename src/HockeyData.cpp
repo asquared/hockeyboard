@@ -176,7 +176,7 @@ void HockeyData::setppyellow() {
 }
 
 void HockeyData::do_sync() {
-	if (!ssync.get_port()) {
+	if (!ssync.ok()) {
 		sstat = ' ';
 		return;
 	}
@@ -220,7 +220,7 @@ void HockeyData::do_sync() {
 }
 
 void HockeyData::do_sync_tr() {
-	if (!ssync.get_port()) {
+	if (!ssync.ok()) {
 		sstat = ' ';
 		return;
 	}
