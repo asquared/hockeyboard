@@ -21,7 +21,8 @@ ClockSocket::ClockSocket( ) {
 	/* initialize destination address */
 	destination.sin_family = AF_INET;
 	destination.sin_port = htons(30003);
-	inet_aton("192.168.1.100", &destination.sin_addr);
+    /* this address has been randomly generated */
+	inet_aton("239.160.181.93", &destination.sin_addr);
 
 }
 
