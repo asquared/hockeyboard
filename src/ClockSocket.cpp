@@ -3,9 +3,12 @@
 #include <stdio.h>
 
 ClockSocket::ClockSocket( ) {
+    char enable_loopback;
+
 #ifdef WINDOWS
+    WSADATA wsad;
 	if (winsock_started == 0) {
-		if (WSAStartup(0x0101, ...) != 0) {
+		if (WSAStartup(0x0101, &wsad) != 0) {
 			throw std::runtime_error("Failed to initialize Windows sockets API\n");
 		}
 	}
@@ -17,6 +20,17 @@ ClockSocket::ClockSocket( ) {
 	if (socket_fd == -1) {
 		throw std::runtime_error("Failed to create UDP socket\n");
 	}
+
+    enable_loopback = 1;
+
+    if (
+        setsockopt(
+            socket_fd, IPPROTO_IP, IP_MULTICAST_LOOP, 
+            &enable_loopback, sizeof(enable_loopback)
+        ) != 0
+    ) {
+        throw std::runtime_error("Failed to set multicast loopback");
+    }
 
 	/* initialize destination address */
 	destination.sin_family = AF_INET;
