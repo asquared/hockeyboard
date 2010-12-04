@@ -50,7 +50,7 @@ bool SyncSocket::can_receive( ) {
 }
 
 size_t SyncSocket::receive(void *buf, size_t size) {
-    ssize_t ret = recvfrom(socket_fd, buf, size, NULL, NULL, NULL);
+    ssize_t ret = recvfrom(socket_fd, buf, size, 0, NULL, NULL);
     if (ret < 0) {
         throw std::runtime_error("recvfrom( ) failed");
     } else {
