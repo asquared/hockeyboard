@@ -20,6 +20,7 @@ hockeyboard_OBJECTS = \
 	serialsync_unix.o \
 	settings.o \
 	timegettime.o \
+	UDPSocket.o
 
 hockeyboard_LIBS = -lGL -lGLU -lglut
 hockeyboard_LIBS += `pkg-config --libs freetype2`
