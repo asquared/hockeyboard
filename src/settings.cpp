@@ -97,8 +97,12 @@ void load_settings(const char* filename) {
 		IniParser::parse(in, temp_int);
 		if (temp_int != 0x80000000) data->stop_delay = temp_int;
 	}
-	if (ip.get("Sync", "TransitionSync", in)) {
-		data->sync_tr = parse_bool(in, false);
+	if (ip.get("Sync", "SyncMode", in)) {
+        temp_int = 0x80000000;
+        IniParser::parse(in, temp_int);
+        if (temp_int >= 0 && temp_int < HockeyData::SYNC_MAX) {
+            data->sync_mode = temp_int;
+        }
 	}
 	if (ip.get("Sync", "UseTenths", in)) {
 		data->use_tenths = parse_bool(in, true);
