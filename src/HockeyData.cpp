@@ -62,7 +62,7 @@ HockeyData::HockeyData() {
 	yellow_h = false;
 	keymode = 'l';
 	sync = false;
-	sync_tr = false;
+    sync_mode = SYNC_GREENLIGHT;
 	use_tenths = true;
 	sstat = ' ';
 	start_delay = 0;
@@ -175,6 +175,18 @@ void HockeyData::setppyellow() {
 	//else yellow_h = false;
 }
 
+void HockeyData::do_socket_sync() {
+    uint32_t recvd_clock;
+    if (sync_sock.can_receive()) {
+        sync_sock.receive(&recvd_clock, sizeof(recvd_clock));
+        recvd_clock = ntohl(recvd_clock);
+
+        /* clock protocol deals in tenths */
+        active_clock->set(recvd_clock * 100);
+
+    }
+}
+
 void HockeyData::do_sync() {
 	if (!ssync.ok()) {
 		sstat = ' ';
@@ -273,8 +285,17 @@ void HockeyData::do_sync_tr() {
 
 void HockeyData::draw_if(freetype::font_data* base) {
 	// synchronizer
-	if (!sync_tr) do_sync();
-	else do_sync_tr();
+    switch (sync_mode) {
+        case SYNC_GREENLIGHT:
+            do_sync();
+            break;
+        case SYNC_TRANSITION:
+            do_sync_tr();
+            break;
+        case SYNC_UDP:
+            do_socket_sync();
+            break;
+    }
 
 	// clock stuff
 	clock.update();
@@ -295,4 +316,17 @@ void HockeyData::draw_if(freetype::font_data* base) {
 	base->qprint(230, 500, 0, "SOG");
 	base->qprint(110, 480, 0, "%-5s %3hhu   %3hhu", tm[0].name.substr(0,5).c_str(), tm[0].sc, tm[0].sog);
 	base->qprint(110, 460, 0, "%-5s %3hhu   %3hhu", tm[1].name.substr(0,5).c_str(), tm[1].sc, tm[1].sog);
+}
+
+const char *HockeyData::sync_mode_as_string( ) {
+    switch (sync_mode) {
+        case SYNC_GREENLIGHT:
+            return "green light";
+
+        case SYNC_TRANSITION:
+            return "7-segment transition";
+
+        case SYNC_UDP:
+            return "UDP clock broadcast";
+    }
 }

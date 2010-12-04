@@ -1197,7 +1197,7 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 			disp[7] = "T: Use tenths of seconds?";
 			clearStrings(8,41);
 			disp[17] = int2str(data->start_delay) + "/" + int2str(data->stop_delay);
-			disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
+            disp[19] = data->sync_mode_as_string( );
 			disp[21] = (data->use_tenths) ? "YES" : "NO";
 			port = data->ssync.get_port();
 			if (!data->ssync.ok( )) disp[10] = "Currently using port: NONE";
@@ -1229,8 +1229,13 @@ void HockeyLogic::logicSync(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, H
 				minor = 30;
 			}
 			else if (key == 'm') {
-				data->sync_tr = !data->sync_tr;
-				disp[19] = (data->sync_tr) ? "READ 7-SEG CLOCK" : "READ GREEN LIGHT";
+				//data->sync_tr = !data->sync_tr;
+                data->sync_mode++;
+                if (data->sync_mode == HockeyData::SYNC_MAX) {
+                    data->sync_mode = 0;
+                }
+
+				disp[19] = data->sync_mode_as_string( );
 			}
 			else if (key == 't') {
 				data->use_tenths = !data->use_tenths;

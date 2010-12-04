@@ -19,6 +19,7 @@ hockeyboard_OBJECTS = \
 	mouse.o \
 	serialsync_unix.o \
 	settings.o \
+	SyncSocket.o \
 	timegettime.o \
 	UDPSocket.o
 

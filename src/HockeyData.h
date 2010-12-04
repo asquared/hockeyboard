@@ -5,6 +5,7 @@
 #include "HockeyRoster.h"
 #include "Mclock.h"
 #include "serialsync.h"
+#include "SyncSocket.h"
 #include <string>
 #include <sstream>
 
@@ -110,9 +111,16 @@ public:
 
 	// sync stuff
 	SerialSync ssync;
+    SyncSocket sync_sock;
 	char sstat;
 	bool sync;
-	bool sync_tr;
+
+    static const int SYNC_GREENLIGHT = 0;
+    static const int SYNC_TRANSITION = 1;
+    static const int SYNC_UDP = 2;
+    static const int SYNC_MAX = 3; /* invalid */
+    int sync_mode;
+
 	bool use_tenths;
 	int start_delay;
 	int stop_delay;
@@ -151,6 +159,9 @@ public:
 	void setppyellow();
 	void do_sync();
 	void do_sync_tr();
+    void do_socket_sync( );
+
+    const char *sync_mode_as_string( );
 
 	void draw_if(freetype::font_data* base);
 
