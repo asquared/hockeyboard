@@ -19,6 +19,7 @@ typedef signed __int32 ssize_t;
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #define print_error perror
 #endif
