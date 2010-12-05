@@ -2,8 +2,9 @@
 #define _hockeydrop_h_
 #include <string>
 //#include "GLBitmap.h"
-#include "GLCairoTextSurface.h"
+
 #include "HockeyData.h"
+#include "GLCairoTextSurface.h"
 #include "FreeType.h"
 #include "Mclock.h"
 

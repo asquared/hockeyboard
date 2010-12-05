@@ -1,11 +1,14 @@
 #ifndef _hockeydata_h_
 #define _hockeydata_h_
 
+/* needs to come first so winsock2.h comes first... stupid MSFT */
+#include "SyncSocket.h"
+
 #include "FreeType.h"
 #include "HockeyRoster.h"
 #include "Mclock.h"
 #include "serialsync.h"
-#include "SyncSocket.h"
+
 #include <string>
 #include <sstream>
 

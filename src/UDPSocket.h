@@ -2,13 +2,25 @@
 #define _udpsocket_h_
 
 #ifdef WINDOWS
-#include <winsock.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <windows.h>
+
+void inet_aton(const char *a, IN_ADDR *n);
+void print_error(const char *msg);
+
+/* Visual Studio apparently lacks a <stdint.h> */
+typedef unsigned __int32 uint32_t;
+typedef signed __int32 ssize_t;
+
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+
+#define print_error perror
 #endif
 
 

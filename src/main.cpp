@@ -240,7 +240,8 @@ int main( int argc, char* argv[] ) {
 	if ( p.y >= 0 && p.y < 100 ) { 
 		SetCursor(NULL);
 	}
-	HINSTANCE hInstance = (HINSTANCE) glutGetHINSTANCE();
+	
+	HINSTANCE hInstance = (HINSTANCE) GetModuleHandle(NULL);
 	curN = LoadCursor(NULL, IDC_ARROW);
 	curG = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_GREEN));
 	curB = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_BLUE));

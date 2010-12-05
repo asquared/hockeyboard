@@ -1,6 +1,9 @@
 #ifndef _hockeydraw_h_
 #define _hockeydraw_h_
 
+/* must go here so winsock2.h is included before windows.h... ugh */
+#include "ClockSocket.h" 
+
 #ifdef WINDOWS
 #include <windows.h>
 #endif
@@ -9,7 +12,7 @@
 #include <GL/glu.h>
 #include "HockeyData.h"
 #include "HockeyDrop.h"
-#include "ClockSocket.h"
+
 
 class HockeyDraw {
 public:

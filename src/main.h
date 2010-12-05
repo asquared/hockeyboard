@@ -5,8 +5,9 @@
 // required libraries
 #pragma comment(lib, "opengl32")
 #pragma comment(lib, "glu32")
-#pragma comment(lib, "glaux")
-
+#pragma comment(lib, "ws2_32")
+//#pragma comment(lib, "glaux")
+#include <winsock2.h>
 #include <windows.h>		// Header File For Windows
 #endif
 
@@ -18,7 +19,10 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-//#include "..\vc7\resource.h"
+#ifdef WINDOWS
+#include "..\vc7\resource.h"
+#endif
+
 #include "FreeType.h"
 #include "HockeyData.h"
 #include "HockeyDrop.h"
