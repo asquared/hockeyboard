@@ -318,9 +318,6 @@ void font_data::qprint(float x, float y, int align, const char *fmt, ...) {
 	// We want a coordinate system where things coresponding to window pixels.
 	pushScreenCoordinateMatrix();	
 
-	//We make the height about 1.5* that of
-	float ht= h/.63f;						
-	
 	char		text[256];								// Holds the string (max of 255 bytes)
 	va_list		ap;										// Pointer to list of arguments
 

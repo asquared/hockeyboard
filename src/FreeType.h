@@ -27,12 +27,14 @@
 //#include <stdexcept>
 #include <iostream>
 
+#ifdef WINDOWS
 //MSVC will spit out all sorts of useless warnings if
 //you create vectors of strings, this pragma gets rid of them.
 #pragma warning(disable: 4786) 
 
 //Required freetype library.
 #pragma comment(lib, "freetype6.lib")
+#endif
 
 ///Wrap everything in a namespace, that we can use common
 ///function names like "print" without worrying about
