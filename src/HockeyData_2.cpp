@@ -142,7 +142,7 @@ void HockeyData::delPenalty(unsigned int team, unsigned int slot) {
 }
 
 void HockeyData::delLastPenalty(unsigned int team) {
-	for (unsigned int t = MAX_QUEUE - 1; t >= 0; --t) {
+	for (int t = MAX_QUEUE - 1; t >= 0; --t) {
 		if (pq[team].qm[t] > 0) {
 			delPenalty(team, t);
 			break;
