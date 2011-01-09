@@ -328,5 +328,8 @@ const char *HockeyData::sync_mode_as_string( ) {
 
         case SYNC_UDP:
             return "UDP clock broadcast";
+        
+        default:
+            return "Internal error";
     }
 }
