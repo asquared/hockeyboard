@@ -135,7 +135,7 @@ void IniParser::trim(string& in) {
 			break;
 		}
 	}
-	for (unsigned int i = size - 1; i >= 0; --i) {
+	for (int i = size - 1; i >= 0; --i) {
 		if (in[i] != ' ') {
 			end_pos = i;
 			break;
