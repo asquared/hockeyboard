@@ -158,11 +158,11 @@ void HockeyLogic::logicClear(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, 
 }
 
 void HockeyLogic::selectMajor(HockeyData* data, HockeyDraw* hd, Keybuffer* kbuf, HockeyDrop* drop) {
-	if (next != -1 && next > 0 && next < 58) {
+	if (next != 0xff && next > 0 && next < 58) {
 		if ( funcarray[next] != NULL ) major = next;
 	}
 
-	next = -1;
+	next = 0xff;
 	if (major > 0 && major < 58) {
 		if ( funcarray[major] != NULL ) (this->*funcarray[major])(data, hd, kbuf, drop);
 	}
