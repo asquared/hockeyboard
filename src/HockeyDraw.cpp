@@ -81,7 +81,9 @@ HockeyDraw::~HockeyDraw() {
 	delete score[1]; 
 	delete name[0]; 
 	delete name[1];
-	delete clock, period, main;
+	delete clock;
+    delete period;
+    delete main;
 	if (bg) delete bg;
 }
 
