@@ -30,7 +30,7 @@ hockeyboard_LIBS += `pkg-config --libs pango`
 hockeyboard_LIBS += `pkg-config --libs pangocairo`
 
 CXX=g++
-CFLAGS=-g -O2
+CFLAGS=-g -O2 -W -Wall
 
 CFLAGS += `pkg-config --cflags freetype2`
 CFLAGS += `pkg-config --cflags pango`
